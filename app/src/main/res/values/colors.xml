@@ -7,5 +7,7 @@
     <color name="loginBackground_color">#F4D9FF</color>
     <color name="grey">#5F5C5C</color>
     <color name="pink">#9F0DBC</color>
+    <color name="colorAccent">#F25597</color>
+    <color name="colorPrimary">#FFFFFFFF</color>
 
 </resources>

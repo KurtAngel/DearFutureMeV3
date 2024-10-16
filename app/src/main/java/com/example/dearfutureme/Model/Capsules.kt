@@ -7,5 +7,6 @@ data class Capsules(
     val content : String?,
     val receiver_email : String?,
     val schedule_open_at : String?,
-    val draft : String?
+    val draft : String?,
+    val imageResId : Int
 )

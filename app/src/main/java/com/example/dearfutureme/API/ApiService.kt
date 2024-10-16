@@ -8,8 +8,6 @@ import com.example.dearfutureme.Model.User
 import retrofit2.Call
 import retrofit2.http.*
 
-
-
 interface ApiService {
 
     @POST("register")
@@ -17,7 +15,6 @@ interface ApiService {
 
     @POST("login")
     fun loginUser(@Body request: User): Call<LoginResponse>
-
 
     @POST("logout") // Adjust the endpoint according to your API
     fun logout(): Call<LogoutResponse>

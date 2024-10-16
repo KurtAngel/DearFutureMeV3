@@ -44,7 +44,7 @@
         android:layout_marginTop="15dp"
         android:background="@drawable/corner_radius"
         android:ems="10"
-        android:hint="Username or Email"
+        android:hint="Email"
         android:textColorHint="@color/grey"
         android:textColor="@color/black"
         android:inputType="textEmailAddress"

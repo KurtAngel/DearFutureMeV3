@@ -8,6 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.example.dearfutureme.API.RetrofitInstance
 import com.example.dearfutureme.Model.Capsules
+import com.example.dearfutureme.R
 import com.example.dearfutureme.databinding.ActivityCreateCapsuleBinding
 import retrofit2.Call
 import retrofit2.Callback
@@ -64,13 +65,11 @@ class CreateCapsule : AppCompatActivity() {
             val title = binding.etTitle.text.toString()
             val message = binding.etMessage.text.toString()
             val date = binding.dateSchedule.text.toString()
-//            val intent = Intent(this@CreateCapsule, CreateCapsule::class.java)
-//            intent.putExtra("title", title)
-//            intent.putExtra("message", message)
-//            intent.putExtra("date", date)
-//            startActivity(intent)
+
+            val imageResId = getImageResIdForCapsule()
+
             if(title.isNotEmpty() && message.isNotEmpty() && date.isNotEmpty()) {
-                val request = Capsules(0, title, message, null, null, date, null)
+                val request = Capsules(0, title, message, null, null, date, null, imageResId)
                 RetrofitInstance.instance.createCapsule(request).enqueue(object :
                     Callback<Capsules> {
                     override fun onResponse(call: Call<Capsules>, response: Response<Capsules>) {
@@ -89,12 +88,17 @@ class CreateCapsule : AppCompatActivity() {
         }
     }
 
+    private fun getImageResIdForCapsule(): Int {
+        return R.drawable.capsule
+    }
+
     private fun sendBtn() {
         binding.sendBtn.setOnClickListener {
             val title = binding.etTitle.text.toString()
             val message = binding.etMessage.text.toString()
             val date = binding.dateSchedule.text.toString()
             val schedule = binding.dateSchedule.text.toString()
+//            val receiverEmail = binding.etReceiverEmail.text.toString()
 
         }
     }

@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dearfutureme.Model.Capsules
+import com.example.dearfutureme.R
 import com.example.dearfutureme.databinding.ViewholderCapsulelistBinding
 
 class CapsuleAdapter(val capsuleItem: MutableList<Capsules>): RecyclerView.Adapter<CapsuleAdapter.CapsuleViewHolder>() {
@@ -13,19 +14,18 @@ class CapsuleAdapter(val capsuleItem: MutableList<Capsules>): RecyclerView.Adapt
 
     inner class CapsuleViewHolder(val binding: ViewholderCapsulelistBinding): RecyclerView.ViewHolder(binding.root)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CapsuleViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CapsuleAdapter.CapsuleViewHolder {
         context=parent.context
         val binding = ViewholderCapsulelistBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return CapsuleViewHolder(binding)
      }
 
 
-    override fun onBindViewHolder(holder: CapsuleViewHolder, position: Int) {
-        capsuleItem
+    override fun onBindViewHolder(holder: CapsuleAdapter.CapsuleViewHolder, position: Int) {
+        capsuleItem[position]
+            holder.binding.IvCapsule.setImageResource(R.drawable.capsule)
+
     }
 
-    override fun getItemCount(): Int {
-        TODO("Not yet implemented")
-    }
-
+    override fun getItemCount(): Int = capsuleItem.size
 }

@@ -12,14 +12,12 @@ import retrofit2.Response
 
 class MainViewModel: ViewModel() {
 
-    private val _capsuleList =  MutableLiveData<MutableList<Capsules>>()
+    private val _capsuleList =  MutableLiveData<MutableList<Capsules>>(mutableListOf())
 
     val capsuleList: LiveData<MutableList<Capsules>> = _capsuleList
 
-    private val apiService = RetrofitInstance.instance
-
     fun loadCapsules() {
-        apiService.getCapsuleList().enqueue(object : Callback<List<Capsules>> {
+        RetrofitInstance.instance.getCapsuleList().enqueue(object : Callback<List<Capsules>> {
             override fun onResponse(
                 call: Call<List<Capsules>>,
                 response: Response<List<Capsules>>

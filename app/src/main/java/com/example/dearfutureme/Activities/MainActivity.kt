@@ -7,6 +7,7 @@ import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.dearfutureme.API.ApiService
 import com.example.dearfutureme.API.RetrofitInstance
@@ -32,6 +33,7 @@ class MainActivity : AppCompatActivity() {
         RetrofitInstance.init(this)
         tokenManager = TokenManager(this)
 
+
         loginAcc()
         createAcc()
     }
@@ -48,14 +50,20 @@ class MainActivity : AppCompatActivity() {
                     override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                         if (response.isSuccessful && response.body() != null) {
                             val token = response.body()?.token
+                            val username = response.body()?.user?.name
+
                             // Save token if not null
                             if (token != null) {
                                 RetrofitInstance.setToken(token)
                                 tokenManager.saveToken(applicationContext, token)
                             }
-                            startActivity(Intent(this@MainActivity, MyCapsuleList::class.java))
+                            val intent = Intent(this@MainActivity, MyCapsuleList::class.java).apply {
+                                    putExtra("USERNAME", username)
+                                }
+                            startActivity(intent)
                         } else {
-                            Toast.makeText(this@MainActivity, "Login failed ${response.message()}", Toast.LENGTH_SHORT).show()
+                            binding.tvInvalid.text = "Login Failed, Try Again!"
+                            hideMessageAfterDelay()
                         }
                     }
 
@@ -65,7 +73,7 @@ class MainActivity : AppCompatActivity() {
                     }
                 })
             } else {
-                binding.tvInvalid.text = "Invalid credentials!"
+                binding.tvInvalid.text = "Please enter Email and Password"
                 hideMessageAfterDelay()
             }
         }

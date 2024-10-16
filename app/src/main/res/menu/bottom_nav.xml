@@ -4,16 +4,16 @@
     <item
         android:title=""
         android:id="@+id/home"
-        android:icon="@drawable/baseline_home_24"
+        android:icon="@drawable/home_fill"
         />
     <item
         android:title=""
-        android:id="@+id/profile"
-        android:icon="@drawable/baseline_person_24"
+        android:id="@+id/sharedCapsules"
+        android:icon="@drawable/send_fill"
         />
     <item
         android:title=""
-        android:id="@+id/settings"
-        android:icon="@drawable/baseline_settings_24"
+        android:id="@+id/notifications"
+        android:icon="@drawable/bell_pin_fill"
         />
 </menu>
