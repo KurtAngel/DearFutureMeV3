@@ -1,5 +1,6 @@
 package com.example.dearfutureme.API
 
+import android.app.Application
 import com.example.dearfutureme.Model.Capsules
 import com.example.dearfutureme.Model.LoginResponse
 import com.example.dearfutureme.Model.LogoutResponse
@@ -10,9 +11,11 @@ import retrofit2.http.*
 
 interface ApiService {
 
+    @Headers("Content-Type: application/json")
     @POST("register")
     fun registerUser(@Body request: User): Call<SignUpResponse>
 
+    @Headers("Content-Type: application/json")
     @POST("login")
     fun loginUser(@Body request: User): Call<LoginResponse>
 

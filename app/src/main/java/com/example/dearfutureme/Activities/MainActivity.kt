@@ -22,7 +22,7 @@ import retrofit2.Response
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    lateinit var tokenManager: TokenManager
+    private lateinit var tokenManager: TokenManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,59 +30,75 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(binding.root)
 
+        // Initialize Retrofit and TokenManager
         RetrofitInstance.init(this)
         tokenManager = TokenManager(this)
 
-
-        loginAcc()
-        createAcc()
+        setupListeners()
     }
 
-    private fun loginAcc() {
+    private fun setupListeners() {
+        // Set up login and account creation button click listeners
         binding.loginBtn.setOnClickListener {
-            val email = binding.etEmailAddress.text.toString()
-            val password = binding.etPassword.text.toString()
-
-            if (email.isNotEmpty() && password.isNotEmpty()) {
-                val request = User(null , email, password)
-
-                RetrofitInstance.instance.loginUser(request).enqueue(object : Callback<LoginResponse> {
-                    override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
-                        if (response.isSuccessful && response.body() != null) {
-                            val token = response.body()?.token
-                            val username = response.body()?.user?.name
-
-                            // Save token if not null
-                            if (token != null) {
-                                RetrofitInstance.setToken(token)
-                                tokenManager.saveToken(applicationContext, token)
-                            }
-                            val intent = Intent(this@MainActivity, MyCapsuleList::class.java).apply {
-                                    putExtra("USERNAME", username)
-                                }
-                            startActivity(intent)
-                        } else {
-                            binding.tvInvalid.text = "Login Failed, Try Again!"
-                            hideMessageAfterDelay()
-                        }
-                    }
-
-                    override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
-                        Toast.makeText(this@MainActivity, "Login error: ${t.message}", Toast.LENGTH_SHORT).show()
-                        Log.e("Login Error", "Error: ${t.message}")
-                    }
-                })
-            } else {
-                binding.tvInvalid.text = "Please enter Email and Password"
-                hideMessageAfterDelay()
-            }
+            handleLogin()
         }
-    }
-
-    private fun createAcc() {
         binding.createAccount.setOnClickListener {
             startActivity(Intent(this@MainActivity, SignupUi::class.java))
         }
+    }
+
+    private fun handleLogin() {
+        val email = binding.etEmailAddress.text.toString().trim()
+        val password = binding.etPassword.text.toString().trim()
+
+        if (validateInputs(email, password)) {
+            performLogin(User(null, email, password))
+        } else {
+            displayError("Please enter a valid Email and Password")
+        }
+    }
+
+    private fun validateInputs(email: String, password: String): Boolean {
+        return email.isNotEmpty() && password.isNotEmpty()
+    }
+
+    private fun performLogin(user: User) {
+        RetrofitInstance.instance.loginUser(user).enqueue(object : Callback<LoginResponse> {
+            override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
+                if (response.isSuccessful && response.body() != null) {
+                    handleSuccessfulLogin(response.body()!!)
+                } else {
+                    displayError("Login Failed, Try Again!")
+                }
+            }
+
+            override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                Log.e("Login Error", "Error: ${t.message}")
+                Toast.makeText(this@MainActivity, "Login error: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun handleSuccessfulLogin(loginResponse: LoginResponse) {
+        val token = loginResponse.token
+        val username = loginResponse.user?.name
+
+        token?.let {
+            RetrofitInstance.setToken(it)
+            tokenManager.saveToken(applicationContext, it)
+
+            val intent = Intent(this@MainActivity, MyCapsuleList::class.java).apply {
+                putExtra("USERNAME", "Hello $username!")
+            }
+            startActivity(intent)
+        } ?: run {
+            displayError("Token missing, unable to login.")
+        }
+    }
+
+    private fun displayError(message: String) {
+        binding.tvInvalid.text = message
+        hideMessageAfterDelay()
     }
 
     private fun hideMessageAfterDelay() {
@@ -90,5 +106,5 @@ class MainActivity : AppCompatActivity() {
             binding.tvInvalid.text = ""
         }, 3000)
     }
-
 }
+

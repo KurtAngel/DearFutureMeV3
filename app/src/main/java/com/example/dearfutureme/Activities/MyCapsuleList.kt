@@ -45,13 +45,19 @@ class MyCapsuleList : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(binding.root)
 
-
+        replaceFragment(HomeFragment())
         bottomNavigation()
 //        displayUsername()
 //        initCapsuleList()
-//        addCapsuleBtn()
+        addCapsuleBtn()
 //        setGradient()
 //        logoutBtn()
+    }
+
+    private fun addCapsuleBtn() {
+        binding.addCapsuleBtn.setOnClickListener {
+            startActivity(Intent(this@MyCapsuleList, CreateCapsule::class.java))
+        }
     }
 
     private fun bottomNavigation() {
@@ -64,10 +70,6 @@ class MyCapsuleList : AppCompatActivity() {
                 }
                 R.id.sharedCapsules -> {
                     replaceFragment(ShareCapsuleFragment())
-                    true
-                }
-                R.id.notifications -> {
-                    replaceFragment(NotificationFragment())
                     true
                 }
                 else -> false

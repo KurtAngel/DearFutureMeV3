@@ -11,9 +11,4 @@
         android:id="@+id/sharedCapsules"
         android:icon="@drawable/send_fill"
         />
-    <item
-        android:title=""
-        android:id="@+id/notifications"
-        android:icon="@drawable/bell_pin_fill"
-        />
 </menu>

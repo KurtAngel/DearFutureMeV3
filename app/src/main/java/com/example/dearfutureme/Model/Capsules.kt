@@ -1,5 +1,8 @@
 package com.example.dearfutureme.Model
 
+import android.graphics.Bitmap
+import org.w3c.dom.Text
+
 data class Capsules(
     val id : Int,
     val title : String,
@@ -8,5 +11,4 @@ data class Capsules(
     val receiver_email : String?,
     val schedule_open_at : String?,
     val draft : String?,
-    val imageResId : Int
 )

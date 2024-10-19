@@ -2,10 +2,14 @@ package com.example.dearfutureme.Activities
 
 import android.app.DatePickerDialog
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.example.dearfutureme.API.RetrofitInstance
 import com.example.dearfutureme.Model.Capsules
 import com.example.dearfutureme.R
@@ -54,9 +58,17 @@ class CreateCapsule : AppCompatActivity() {
         }
     }
 
+    //    private fun backBtn() {
+//        binding.btnBack.setOnClickListener {
+//            startActivity(Intent(this@CreateCapsule, MyCapsuleList::class.java))
+//        }
+//    }
     private fun backBtn() {
         binding.btnBack.setOnClickListener {
-            startActivity(Intent(this@CreateCapsule, MyCapsuleList::class.java))
+            val intent = Intent()
+            intent.putExtra("USERNAME", intent.getStringExtra("USERNAME")) // Pass the username back
+            setResult(RESULT_OK, intent)
+            finish()
         }
     }
 
@@ -69,14 +81,17 @@ class CreateCapsule : AppCompatActivity() {
             val imageResId = getImageResIdForCapsule()
 
             if(title.isNotEmpty() && message.isNotEmpty() && date.isNotEmpty()) {
-                val request = Capsules(0, title, message, null, null, date, null, imageResId)
+                val request = Capsules(0, title, message, null, null, null, null)
                 RetrofitInstance.instance.createCapsule(request).enqueue(object :
                     Callback<Capsules> {
                     override fun onResponse(call: Call<Capsules>, response: Response<Capsules>) {
                         if (response.isSuccessful && response.body() != null) {
                             val capsule = response.body()?.draft
                             Toast.makeText(this@CreateCapsule, capsule, Toast.LENGTH_SHORT).show()
-                            startActivity(Intent(this@CreateCapsule, MyCapsuleList::class.java))
+                            val intent = Intent()
+                            intent.putExtra("USERNAME", intent.getStringExtra("USERNAME")) // Pass the username back
+                            setResult(RESULT_OK, intent)
+                            finish()
                         }
                     }
 
@@ -88,8 +103,11 @@ class CreateCapsule : AppCompatActivity() {
         }
     }
 
-    private fun getImageResIdForCapsule(): Int {
-        return R.drawable.capsule
+    private fun getImageResIdForCapsule(): Bitmap {
+        val options = BitmapFactory.Options().apply {
+            inSampleSize = 2 // Scale the image by half (or higher for more compression)
+        }
+        return BitmapFactory.decodeResource(resources, R.drawable.capsule, options)
     }
 
     private fun sendBtn() {

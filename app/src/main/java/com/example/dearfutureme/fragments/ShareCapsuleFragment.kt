@@ -35,7 +35,7 @@ class ShareCapsuleFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_share_capsule, container, false)
+        return inflater.inflate(R.layout.fragment_shared__capsule, container, false)
     }
 
     companion object {

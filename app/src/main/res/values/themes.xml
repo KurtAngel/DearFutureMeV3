@@ -12,7 +12,7 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="Theme.DearFutureMe.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
     <style name="Theme.DearFutureMe.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <style name="Theme.DearFutureMe.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

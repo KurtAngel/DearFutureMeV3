@@ -22,8 +22,6 @@ object RetrofitInstance {
     fun init(context: Context) {
         tokenManager = TokenManager(context)
     }
-
-
     // Build http client with interceptor
     private val okHttpClient by lazy {
         OkHttpClient.Builder()
