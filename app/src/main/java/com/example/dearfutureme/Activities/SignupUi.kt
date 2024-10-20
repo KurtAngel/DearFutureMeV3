@@ -35,7 +35,13 @@ class SignupUi : AppCompatActivity() {
             val username = binding.etuserName.text.toString()
             val email = binding.etEmailAddress.text.toString()
             val password = binding.etPassword.text.toString()
-            if (email.isNotEmpty() && password.isNotEmpty()) {
+
+            if (username.isEmpty() || email.isEmpty() || password.isEmpty()){
+                binding.tvUserExist.text = "Fill all the requirements"
+                hideMessageAfterDelay()
+
+            } else {
+                if (validateInputs(username, email, password)) {
                 val request = User(username, email, password)
 
                 RetrofitInstance.instance.registerUser(request).enqueue(object : Callback<SignUpResponse> {
@@ -44,8 +50,8 @@ class SignupUi : AppCompatActivity() {
                         if (response.isSuccessful && response.body() != null) {
                             val userRegistration = response.body()?.status
 
-                                binding.tvUserExist.text = "$userRegistration"
-                                hideMessageAfterDelay()
+                            binding.tvUserExist.text = "$userRegistration"
+                            hideMessageAfterDelay()
 
                         } else {
                             binding.tvUserExist.text = "Registration Failed"
@@ -57,8 +63,23 @@ class SignupUi : AppCompatActivity() {
                         Log.e("Registration Error", "Error: ${t.message}")
                     }
                 })
+            } else {
+                binding.tvUserExist.text = "Invalid Username, Email or Password"
+                hideMessageAfterDelay()
+            }
             }
         }
+    }
+
+    private fun validateInputs(email: String, password: String, username: String): Boolean {
+        val usernamePattern = "^[a-zA-Z0-9]*\$".toRegex()
+        val passwordPattern = "^[a-zA-Z0-9@#\$]*\$".toRegex()
+//        val emailPattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]$".toRegex()
+
+
+        return password.matches(passwordPattern) && username.matches(usernamePattern)
+//        email.matches(emailPattern) &&
+
     }
 
 

@@ -76,7 +76,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/frameLayout2"
             android:layout_width="match_parent"
-            android:layout_height="708dp"
+            android:layout_height="match_parent"
             android:layout_marginTop="32dp"
             android:background="@drawable/frame_layout_bg"
             android:orientation="vertical"
@@ -119,9 +119,9 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerViewCapsule"
                     android:layout_width="match_parent"
-                    android:layout_height="550dp"
+                    android:clipToPadding="false"
+                    android:layout_height="525dp"
                     android:layout_gravity="center"
-
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
@@ -145,7 +145,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:fontFamily="@font/poppins_black"
-                    android:text="My Capsule"
+                    android:text="My Capsules"
                     android:textSize="45dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

@@ -50,16 +50,23 @@ class MainActivity : AppCompatActivity() {
     private fun handleLogin() {
         val email = binding.etEmailAddress.text.toString().trim()
         val password = binding.etPassword.text.toString().trim()
-
-        if (validateInputs(email, password)) {
+        if (email.isEmpty() || password.isEmpty()) {
+            binding.tvInvalid.text = "Please enter Email and Password"
+        } else {
+            if (validateInputs(email, password)) {
             performLogin(User(null, email, password))
         } else {
             displayError("Please enter a valid Email and Password")
-        }
+        }}
+
     }
 
     private fun validateInputs(email: String, password: String): Boolean {
-        return email.isNotEmpty() && password.isNotEmpty()
+        val passwordPattern = "^[a-zA-Z0-9@#\$]*\$".toRegex()
+        val emailPattern = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.com\$".toRegex()
+
+        return email.isNotEmpty() && password.isNotEmpty() &&
+        email.matches(emailPattern) && password.matches(passwordPattern)
     }
 
     private fun performLogin(user: User) {
@@ -83,7 +90,7 @@ class MainActivity : AppCompatActivity() {
         val token = loginResponse.token
         val username = loginResponse.user?.name
 
-        token?.let {
+        token.let {
             RetrofitInstance.setToken(it)
             tokenManager.saveToken(applicationContext, it)
 

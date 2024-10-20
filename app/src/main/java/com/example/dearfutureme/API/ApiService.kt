@@ -1,7 +1,9 @@
 package com.example.dearfutureme.API
 
 import android.app.Application
+import com.example.dearfutureme.Model.CapsuleResponse
 import com.example.dearfutureme.Model.Capsules
+import com.example.dearfutureme.Model.EditCapsuleResponse
 import com.example.dearfutureme.Model.LoginResponse
 import com.example.dearfutureme.Model.LogoutResponse
 import com.example.dearfutureme.Model.SignUpResponse
@@ -26,7 +28,7 @@ interface ApiService {
     fun createCapsule(@Body capsule: Capsules): Call<Capsules>
 
     @GET("capsules")
-    fun getCapsuleList(): Call<List<Capsules>>
+    fun getCapsuleList(): Call<CapsuleResponse>
 
     @GET("capsules/{id}")
     fun getCapsuleById(@Path("id") id: Int): Call<Capsules>
@@ -35,5 +37,5 @@ interface ApiService {
     fun deleteCapsule(@Path("id") id: Int): Call<Void>
 
     @PUT("capsules/{id}")
-    fun updateCapsule(@Path("id") id: Int, @Body capsule: Capsules): Call<Capsules>
+    fun updateCapsule(@Path("id") id: Int, @Body capsule: Capsules): Call<EditCapsuleResponse>
 }

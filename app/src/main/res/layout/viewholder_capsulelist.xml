@@ -3,31 +3,56 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
-<!--    <com.google.android.material.imageview.ShapeableImageView-->
-<!--        android:id="@+id/IvCapsule"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="130dp"-->
-<!--        android:clickable="true"-->
-<!--        android:focusable="true"-->
-<!--        android:layout_margin="15dp"-->
-<!--        android:scaleType="fitCenter"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        app:srcCompat="@drawable/capsule" />-->
-
-    <TextView
-        android:id="@+id/tvTitle"
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/IvCapsule"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:gravity="center"
-        android:text="TITLE"
-        android:textSize="16dp"
+        android:layout_height="150dp"
+        android:layout_margin="15dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:scaleType="fitCenter"
+        android:src="@drawable/draft_capsule"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+<!--    <TextView-->
+<!--        android:id="@+id/tvTitle"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_margin="16dp"-->
+<!--        android:background="@drawable/btn_gradient"-->
+<!--        android:text="TITLE"-->
+<!--        android:gravity="center"-->
+<!--        android:padding="50dp"-->
+<!--        android:textColor="@color/black"-->
+<!--        android:textSize="26sp"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent" />-->
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TITLE"
+        android:textColor="@color/black"
+        android:textSize="26sp"
+        app:layout_constraintEnd_toEndOf="@+id/IvCapsule"
+        app:layout_constraintStart_toStartOf="@+id/IvCapsule"
+        app:layout_constraintTop_toTopOf="@+id/IvCapsule" />
+
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="67dp"
+        android:layout_height="72dp"
+        app:layout_constraintBottom_toBottomOf="@+id/IvCapsule"
+        app:layout_constraintEnd_toEndOf="@+id/IvCapsule"
+        app:layout_constraintStart_toStartOf="@+id/IvCapsule"
+        app:layout_constraintTop_toTopOf="@+id/IvCapsule"
+        app:srcCompat="@drawable/unlocked_pad" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

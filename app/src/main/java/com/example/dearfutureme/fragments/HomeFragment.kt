@@ -13,7 +13,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dearfutureme.API.RetrofitInstance
 import com.example.dearfutureme.API.TokenManager
@@ -36,135 +35,6 @@ private const val ARG_PARAM2 = "param2"
  * Use the [HomeFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-//class HomeFragment : Fragment() {
-//
-//    private lateinit var binding: FragmentHomeBinding
-//    private lateinit var viewModel: MainViewModel
-//    private lateinit var tokenManager: TokenManager
-//    // Parameters
-//    private var param1: String? = null
-//    private var param2: String? = null
-//
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        arguments?.let {
-//            param1 = it.getString(ARG_PARAM1)
-//            param2 = it.getString(ARG_PARAM2)
-//        }
-//    }
-//
-//    override fun onCreateView(
-//        inflater: LayoutInflater, container: ViewGroup?,
-//        savedInstanceState: Bundle?
-//    ): View {
-//        // Initialize binding
-//        binding = FragmentHomeBinding.inflate(inflater, container, false)
-//        return binding.root
-//    }
-//
-//    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-//        super.onViewCreated(view, savedInstanceState)
-//
-//        // Initialize ViewModel using ViewModelProvider
-//        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-//
-//        // Setup RecyclerView
-//        binding.recyclerViewCapsule.layoutManager = LinearLayoutManager(requireContext())
-//
-//        // Observe Capsule List and set adapter when data changes
-//        viewModel.capsuleList.observe(viewLifecycleOwner, Observer { capsules ->
-//            binding.recyclerViewCapsule.adapter = CapsuleAdapter(capsules.toMutableList())
-//            binding.progressBarCapsuleList.visibility = View.GONE
-//        })
-////        viewModel.capsuleList.observe(viewLifecycleOwner, Observer { capsules ->
-////            val adapter = binding.recyclerViewCapsule.adapter as CapsuleAdapter
-////            adapter.notifyDataSetChanged()
-////            binding.progressBarCapsuleList.visibility = View.GONE
-////        })
-//
-//
-//        // Load Capsules from ViewModel
-//        initCapsuleList()
-//
-//        // Other UI functions
-//        displayUsername()
-//        setGradient()
-//        logoutBtn()
-//    }
-//
-//    private fun displayUsername() {
-//        val username = requireActivity().intent.getStringExtra("USERNAME")
-//        binding.usernameView.text = username ?: "Guest"
-//    }
-//
-//    private fun initCapsuleList() {
-//        binding.progressBarCapsuleList.visibility = View.VISIBLE
-//        viewModel.loadCapsules()  // Trigger the ViewModel to load data
-//    }
-//
-//    private fun logoutBtn() {
-//        binding.logoutBtn.setOnClickListener {
-//            val builder = AlertDialog.Builder(requireActivity())
-//            builder.setTitle("Logout")
-//            builder.setMessage("Are you sure you want to logout?")
-//            builder.setPositiveButton("Yes") { dialog, which -> logoutUser() }
-//            builder.setNegativeButton("No") { dialog, which -> dialog.dismiss() }
-//            builder.create().show()
-//        }
-//    }
-//
-//    private fun logoutUser() {
-//        tokenManager = TokenManager(requireActivity())
-//        RetrofitInstance.instance.logout().enqueue(object : Callback<LogoutResponse> {
-//            override fun onResponse(
-//                call: Call<LogoutResponse>,
-//                response: Response<LogoutResponse>
-//            ) {
-//                if (response.isSuccessful) {
-//                    tokenManager.clearToken()
-//                    Toast.makeText(requireActivity(), response.body()?.message, Toast.LENGTH_SHORT)
-//                        .show()
-//                    startActivity(Intent(requireActivity(), MainActivity::class.java).apply {
-//                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-//                    })
-//                } else {
-//                    Toast.makeText(
-//                        requireActivity(),
-//                        "Logout failed: ${response.message()}",
-//                        Toast.LENGTH_SHORT
-//                    ).show()
-//                }
-//            }
-//
-//            override fun onFailure(call: Call<LogoutResponse>, t: Throwable) {
-//                Toast.makeText(requireActivity(), "Logout failed: ${t.message}", Toast.LENGTH_SHORT)
-//                    .show()
-//            }
-//        })
-//    }
-//
-//    private fun setGradient() {
-//        val paint = binding.tvMyCapsule.paint
-//        val width = paint.measureText(binding.tvMyCapsule.text.toString())
-//        binding.tvMyCapsule.paint.shader = LinearGradient(
-//            0f, 0f, width, binding.tvMyCapsule.textSize,
-//            intArrayOf(Color.parseColor("#6B26D4"), Color.parseColor("#C868FF")),
-//            null,
-//            Shader.TileMode.CLAMP
-//        )
-//    }
-//
-//    companion object {
-//        @JvmStatic
-//        fun newInstance(param1: String, param2: String) =
-//            HomeFragment().apply {
-//                arguments = Bundle().apply {
-//                    putString(ARG_PARAM1, param1)
-//                    putString(ARG_PARAM2, param2)
-//                }
-//            }
-//    }
-//}
 
 class HomeFragment : Fragment() {
 
@@ -185,23 +55,33 @@ class HomeFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View
+    {
         // Initialize binding
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?)
+    {
         super.onViewCreated(view, savedInstanceState)
 
-        displayUsername()
         initCapsuleList()
-//        addCapsuleBtn()
+        setupListeners()
+        tokenManager = TokenManager(requireActivity())
+        displayUsername()
         setGradient()
-        logoutBtn()
+    }
+
+    private fun setupListeners() {
+        binding.logoutBtn.setOnClickListener {
+            val builder = AlertDialog.Builder(requireActivity())
+            builder.setTitle("Logout")
+            builder.setMessage("Are you sure you want to logout?")
+            builder.setPositiveButton("Yes") { dialog, which -> logoutUser() }
+            builder.setNegativeButton("No") { dialog, which -> dialog.dismiss() }
+            builder.create().show()
+        }
     }
 
     companion object {
@@ -236,19 +116,8 @@ class HomeFragment : Fragment() {
         viewModel.loadCapsules()
     }
 
-    private fun logoutBtn() {
-        binding.logoutBtn.setOnClickListener {
-            val builder = AlertDialog.Builder(requireActivity())
-            builder.setTitle("Logout")
-            builder.setMessage("Are you sure you want to logout?")
-            builder.setPositiveButton("Yes") { dialog, which -> logoutUser() }
-            builder.setNegativeButton("No") { dialog, which -> dialog.dismiss() }
-            builder.create().show()
-        }
-    }
-
     private fun logoutUser() {
-        tokenManager = TokenManager(requireActivity())
+
         RetrofitInstance.instance.logout().enqueue(object : Callback<LogoutResponse> {
             override fun onResponse(call: Call<LogoutResponse>, response: Response<LogoutResponse>) {
                 if (response.isSuccessful) {
@@ -278,10 +147,4 @@ class HomeFragment : Fragment() {
             Shader.TileMode.CLAMP
         )
     }
-
-//    private fun addCapsuleBtn() {
-//        binding.addCapsuleBtn.setOnClickListener {
-//            startActivity(Intent(requireActivity(), CreateCapsule::class.java))
-//        }
-//    }
 }
