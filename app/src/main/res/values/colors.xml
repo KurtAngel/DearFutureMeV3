@@ -9,5 +9,6 @@
     <color name="pink">#9F0DBC</color>
     <color name="colorAccent">#F25597</color>
     <color name="colorPrimary">#FFFFFFFF</color>
+    <color name="titleColor">#2B1253</color>
 
 </resources>

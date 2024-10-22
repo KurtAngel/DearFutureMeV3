@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dearfutureme.API.RetrofitInstance
 import com.example.dearfutureme.Activities.CreateCapsule
+import com.example.dearfutureme.Activities.SharedCapsule
 import com.example.dearfutureme.Model.Capsules
 import com.example.dearfutureme.R
 import com.example.dearfutureme.databinding.ViewholderCapsulelistBinding
@@ -23,6 +24,7 @@ class CapsuleAdapter(private val capsuleList: MutableList<Capsules>) : RecyclerV
     inner class CapsuleViewHolder(val binding: ViewholderCapsulelistBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CapsuleViewHolder {
+
         context=parent.context
         val binding = ViewholderCapsulelistBinding.inflate(LayoutInflater.from(context), parent, false)
         return CapsuleViewHolder(binding)
@@ -34,7 +36,7 @@ class CapsuleAdapter(private val capsuleList: MutableList<Capsules>) : RecyclerV
         holder.binding.tvTitle.text = capsule.title
 
         holder.binding.IvCapsule.setOnClickListener{
-            RetrofitInstance.instance.getCapsuleById(position+1).enqueue(object : Callback<Capsules>
+            RetrofitInstance.instance.getCapsuleById(capsule.id).enqueue(object : Callback<Capsules>
             {
                 override fun onResponse(call: Call<Capsules>, response: Response<Capsules>) {
                     if (response.isSuccessful) {
@@ -58,9 +60,20 @@ class CapsuleAdapter(private val capsuleList: MutableList<Capsules>) : RecyclerV
                 }
             })
         }
+
+        holder.binding.shareBtn.setOnClickListener{
+            val intent = Intent(this@CapsuleAdapter.context, SharedCapsule::class.java).apply {
+                putExtra(Intent.EXTRA_TEXT, "Check out this capsule: ${capsule.title}")
+            }
+            context.startActivity(intent)
+        }
+//        updateCapsuleList(capsuleList)
     }
-
+    fun updateCapsuleList(newCapsuleList: List<Capsules>) {
+        capsuleList.clear()
+        capsuleList.addAll(newCapsuleList)
+        notifyDataSetChanged()
+    }
     override fun getItemCount(): Int = capsuleList.size
-
 }
 

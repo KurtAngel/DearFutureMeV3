@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.graphics.LinearGradient
 import android.graphics.Shader
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,14 +20,14 @@ import com.example.dearfutureme.API.TokenManager
 import com.example.dearfutureme.Activities.MainActivity
 import com.example.dearfutureme.Adapter.CapsuleAdapter
 import com.example.dearfutureme.Model.LogoutResponse
+import com.example.dearfutureme.R
 import com.example.dearfutureme.ViewModel.MainViewModel
 import com.example.dearfutureme.databinding.FragmentHomeBinding
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
@@ -41,7 +42,6 @@ class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
     private val viewModel = MainViewModel()
     private lateinit var tokenManager: TokenManager
-    private lateinit var image: ImageView
 
     // Parameters
     private var param1: String? = null
@@ -53,6 +53,7 @@ class HomeFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View
@@ -71,6 +72,12 @@ class HomeFragment : Fragment() {
         tokenManager = TokenManager(requireActivity())
         displayUsername()
         setGradient()
+
+        val intent = requireActivity().intent
+        intent.getStringExtra("USERNAME")?.let {
+            Log.d("HomeFragment", "Received username: $it")
+            binding.usernameView.text = it // Set the username in the TextView
+        }
     }
 
     private fun setupListeners() {

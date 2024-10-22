@@ -36,9 +36,6 @@
             android:name=".Activities.SecondIntro"
             android:exported="false" />
         <activity
-            android:name=".Activities.BaseActivity"
-            android:exported="false" />
-        <activity
             android:name=".Activities.FirstIntro"
             android:exported="true">
             <intent-filter>

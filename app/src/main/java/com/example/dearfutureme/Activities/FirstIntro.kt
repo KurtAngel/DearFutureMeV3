@@ -7,6 +7,7 @@ import android.graphics.Shader
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import com.example.dearfutureme.API.RetrofitInstance.tokenManager
 import com.example.dearfutureme.databinding.ActivityFirstIntroBinding
 
 class FirstIntro : AppCompatActivity() {
@@ -32,5 +33,12 @@ class FirstIntro : AppCompatActivity() {
             startActivity(Intent(this@FirstIntro, SecondIntro::class.java))
             finish()
         }
+
+        // Check if user is already logged in
+//        if (tokenManager.getToken() != null) {
+//            val intent = Intent(this@FirstIntro, MyCapsuleList::class.java)
+//            startActivity(intent)
+//            finish()
+//        }
     }
 }

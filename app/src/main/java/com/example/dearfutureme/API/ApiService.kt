@@ -37,5 +37,5 @@ interface ApiService {
     fun deleteCapsule(@Path("id") id: Int): Call<Void>
 
     @PUT("capsules/{id}")
-    fun updateCapsule(@Path("id") id: Int, @Body capsule: Capsules): Call<EditCapsuleResponse>
+    fun updateCapsule(@Path("id") id: Int, @Body capsule: Capsules): Call<Capsules>
 }

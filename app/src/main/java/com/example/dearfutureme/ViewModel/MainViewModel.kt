@@ -21,13 +21,15 @@ class MainViewModel : ViewModel() {
 
     fun loadCapsules() {
         RetrofitInstance.instance.getCapsuleList().enqueue(object : Callback<CapsuleResponse> {
-            override fun onResponse(
-                call: Call<CapsuleResponse>,
-                response: Response<CapsuleResponse>
-            ) {
-                if (response.isSuccessful) {
+
+            override fun onResponse(call: Call<CapsuleResponse>, response: Response<CapsuleResponse>)
+            {
+                if (response.isSuccessful)
+                {
                     _capsuleList.value = response.body()?.data
-                } else {
+                }
+                else
+                {
                     _error.value = "Error: ${response.message()}"
                     Log.d("API", "Error: ${response.message()}")
                 }
@@ -44,6 +46,4 @@ class MainViewModel : ViewModel() {
     fun clearError() {
         _error.value = null
     }
-
-
 }

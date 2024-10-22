@@ -34,6 +34,14 @@ class MainActivity : AppCompatActivity() {
         RetrofitInstance.init(this)
         tokenManager = TokenManager(this)
 
+        // Check if user is already logged in
+//        if (tokenManager.getToken() != null) {
+//            val intent = Intent(this@MainActivity, MyCapsuleList::class.java)
+//            startActivity(intent)
+//            finish()
+//        }
+
+
         setupListeners()
     }
 
@@ -52,26 +60,29 @@ class MainActivity : AppCompatActivity() {
         val password = binding.etPassword.text.toString().trim()
         if (email.isEmpty() || password.isEmpty()) {
             binding.tvInvalid.text = "Please enter Email and Password"
+            hideMessageAfterDelay()
         } else {
             if (validateInputs(email, password)) {
             performLogin(User(null, email, password))
         } else {
             displayError("Please enter a valid Email and Password")
+            hideMessageAfterDelay()
         }}
 
     }
 
     private fun validateInputs(email: String, password: String): Boolean {
-        val passwordPattern = "^[a-zA-Z0-9@#\$]*\$".toRegex()
-        val emailPattern = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.com\$".toRegex()
+//        val emailPattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$".toRegex()
+//        val passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#\$%^&+=!]).{8,}$".toRegex()
 
-        return email.isNotEmpty() && password.isNotEmpty() &&
-        email.matches(emailPattern) && password.matches(passwordPattern)
+        return email.isNotEmpty() && password.isNotEmpty()
+//                && email.matches(emailPattern)&& password.matches(passwordPattern)
     }
 
     private fun performLogin(user: User) {
         RetrofitInstance.instance.loginUser(user).enqueue(object : Callback<LoginResponse> {
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
+
                 if (response.isSuccessful && response.body() != null) {
                     handleSuccessfulLogin(response.body()!!)
                 } else {
@@ -88,7 +99,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun handleSuccessfulLogin(loginResponse: LoginResponse) {
         val token = loginResponse.token
-        val username = loginResponse.user?.name
+        val username = loginResponse.user?.name.toString()
+
+        Log.d("Username", "Username: $username")
 
         token.let {
             RetrofitInstance.setToken(it)

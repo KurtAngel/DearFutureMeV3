@@ -3,6 +3,7 @@ package com.example.dearfutureme.Model
 import android.graphics.Bitmap
 import android.os.Parcel
 import android.os.Parcelable
+import com.google.gson.annotations.SerializedName
 import org.w3c.dom.Text
 
 data class Capsules(
@@ -10,9 +11,12 @@ data class Capsules(
     val title : String,
     val message : String,
     val content : String?,
-    val receiver_email : String?,
-    val schedule_open_at : String?,
-    val draft : String?
+    @SerializedName("receiver_email")
+    val receiverEmail : String?,
+    @SerializedName("scheduled_open_at")
+    val scheduledOpenAt : String?,
+    val draft : String?,
+    val images: Images?
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
@@ -21,7 +25,8 @@ data class Capsules(
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
-        parcel.readString()
+        parcel.readString(),
+        parcel.readParcelable(Images::class.java.classLoader)
     ) {
     }
 
@@ -30,8 +35,8 @@ data class Capsules(
         parcel.writeString(title)
         parcel.writeString(message)
         parcel.writeString(content)
-        parcel.writeString(receiver_email)
-        parcel.writeString(schedule_open_at)
+        parcel.writeString(receiverEmail)
+        parcel.writeString(scheduledOpenAt)
         parcel.writeString(draft)
     }
 

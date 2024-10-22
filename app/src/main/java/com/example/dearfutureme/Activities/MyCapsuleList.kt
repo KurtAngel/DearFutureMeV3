@@ -2,6 +2,7 @@ package com.example.dearfutureme.Activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -13,12 +14,14 @@ import com.example.dearfutureme.ViewModel.MainViewModel
 import com.example.dearfutureme.databinding.ActivityMyCapsuleListBinding
 import com.example.dearfutureme.fragments.HomeFragment
 import com.example.dearfutureme.fragments.ShareCapsuleFragment
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 
 class MyCapsuleList : AppCompatActivity() {
 
     private lateinit var binding: ActivityMyCapsuleListBinding
 
     lateinit var tokenManager: TokenManager
+    private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -30,10 +33,13 @@ class MyCapsuleList : AppCompatActivity() {
         tokenManager = TokenManager(this)
         RetrofitInstance.init(this)
 
+
         replaceFragment(HomeFragment())
 
         setUpListeners()
     }
+
+
 
     private fun setUpListeners() {
         binding.addCapsuleBtn.setOnClickListener {
