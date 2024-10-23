@@ -1,4 +1,4 @@
-package com.example.dearfutureme.Model
+package com.example.dearfutureme.APIResponse
 
 data class EditCapsuleResponse(
     val updateMessage: String,

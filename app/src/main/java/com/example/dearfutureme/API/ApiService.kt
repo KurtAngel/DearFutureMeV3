@@ -1,13 +1,14 @@
 package com.example.dearfutureme.API
 
-import android.app.Application
-import com.example.dearfutureme.Model.CapsuleResponse
+import com.example.dearfutureme.APIResponse.CapsuleResponse
 import com.example.dearfutureme.Model.Capsules
-import com.example.dearfutureme.Model.EditCapsuleResponse
-import com.example.dearfutureme.Model.LoginResponse
-import com.example.dearfutureme.Model.LogoutResponse
-import com.example.dearfutureme.Model.SignUpResponse
+import com.example.dearfutureme.APIResponse.DeletedCapsuleResponse
+import com.example.dearfutureme.APIResponse.LoginResponse
+import com.example.dearfutureme.APIResponse.LogoutResponse
+import com.example.dearfutureme.APIResponse.SignUpResponse
 import com.example.dearfutureme.Model.User
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -24,8 +25,16 @@ interface ApiService {
     @POST("logout") // Adjust the endpoint according to your API
     fun logout(): Call<LogoutResponse>
 
+    @Multipart
     @POST("capsules")
-    fun createCapsule(@Body capsule: Capsules): Call<Capsules>
+    fun createCapsule(
+        @Part images: List<MultipartBody.Part>?,  // List of image parts for multiple images
+        @Part("title") title: RequestBody,        // Other form fields
+        @Part("message") message: RequestBody,
+        @Part("receiver_email") receiverEmail: RequestBody,
+        @Part("scheduled_open_at") scheduledOpenAt: RequestBody,
+        @Part("draft") draft: RequestBody?
+    ): Call<Capsules>
 
     @GET("capsules")
     fun getCapsuleList(): Call<CapsuleResponse>
@@ -34,8 +43,9 @@ interface ApiService {
     fun getCapsuleById(@Path("id") id: Int): Call<Capsules>
 
     @DELETE("capsules/{id}")
-    fun deleteCapsule(@Path("id") id: Int): Call<Void>
+    fun deleteCapsule(@Path("id") id: Int): Call<DeletedCapsuleResponse>
 
+    @Headers("Content-Type: application/json")
     @PUT("capsules/{id}")
     fun updateCapsule(@Path("id") id: Int, @Body capsule: Capsules): Call<Capsules>
 }

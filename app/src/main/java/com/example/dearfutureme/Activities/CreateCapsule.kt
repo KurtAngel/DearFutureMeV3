@@ -1,27 +1,32 @@
 package com.example.dearfutureme.Activities
 
+import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dearfutureme.API.RetrofitInstance
+import com.example.dearfutureme.Adapter.ImageAdapter
 import com.example.dearfutureme.Model.Capsules
-import com.example.dearfutureme.Model.EditCapsuleResponse
-import com.example.dearfutureme.R
+import com.example.dearfutureme.Model.Image
 import com.example.dearfutureme.databinding.ActivityCreateCapsuleBinding
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.File
 import java.util.Calendar
 
 class CreateCapsule : AppCompatActivity() {
@@ -29,6 +34,8 @@ class CreateCapsule : AppCompatActivity() {
     lateinit var binding: ActivityCreateCapsuleBinding
     private lateinit var mode: String
     var capsule: Capsules? = null
+    private lateinit var imageAdapter: ImageAdapter
+    private val imagesList = mutableListOf<Image>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +43,10 @@ class CreateCapsule : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(binding.root)
 
+        // Initialize RecyclerView
+        imageAdapter = ImageAdapter(imagesList) // Use your adapter that displays image filenames
+        binding.recyclerViewImage.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        binding.recyclerViewImage.adapter = imageAdapter
         mode = intent.getStringExtra("MODE").toString()
         capsule = intent.getParcelableExtra("CAPSULE")
 
@@ -43,6 +54,7 @@ class CreateCapsule : AppCompatActivity() {
         backBtn()
         setDate()
         setTime()
+        addImage()
 
         if(mode == "EDIT"){
             editBtn()
@@ -50,6 +62,61 @@ class CreateCapsule : AppCompatActivity() {
             createBtn()
         }
     }
+
+    private fun addImage() {
+        binding.addImageBtn.setOnClickListener {
+            // Create an intent to pick an image
+//            val intent = Intent(Intent.ACTION_PICK).apply {
+//                type = "image/*" // Only show images
+//            }
+//            startActivityForResult(intent, REQUEST_IMAGE_PICK)
+            pickImageFromGallery()
+        }
+    }
+
+    private fun pickImageFromGallery() {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        startActivityForResult(intent, IMAGE_PICK_CODE)
+    }
+
+    // Function to get the file name from the URI
+    private fun getFileName(uri: Uri): String? {
+        val cursor = contentResolver.query(uri, null, null, null, null)
+        cursor?.use {
+            val nameIndex = it.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME)
+            if (it.moveToFirst()) {
+                return it.getString(nameIndex)
+            }
+        }
+        return null
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == IMAGE_PICK_CODE && resultCode == Activity.RESULT_OK) {
+            val selectedImageUri = data?.data
+            if (selectedImageUri != null) {
+                val fileName = getFileName(selectedImageUri)
+                Log.d("Image Selection", "File Name: $fileName")
+
+                // Create your Image object
+                val image = Image(
+                    id = 0,
+                    image = selectedImageUri.toString(),
+                    capsuleId = 0,
+                    capsuleType = "default"
+                )
+                imagesList.add(image) // Add to your image list
+                imageAdapter.notifyItemInserted(imagesList.size - 1)
+                }
+            }
+}
+
+
+        private val IMAGE_PICK_CODE = 1001
+
+
 
     private fun setTime() {
         val timeEditText: EditText = binding.timeSchedule
@@ -66,7 +133,7 @@ class CreateCapsule : AppCompatActivity() {
                 this,
                 { _, selectedHour, selectedMinute ->
                     // Format and set the selected time in HH:MM format
-                    val formattedTime = String.format("%02d : %02d : %02d", selectedHour, selectedMinute, second)
+                    val formattedTime = String.format("%02d:%02d:%02d", selectedHour, selectedMinute, second)
                     timeEditText.setText(formattedTime) // Set the time in EditText
                 },
                 hour, minute, true // true for 24-hour format
@@ -80,11 +147,14 @@ class CreateCapsule : AppCompatActivity() {
         binding.tvMyCapsule.text = "Edit Capsule"
         val title =binding.etTitle.setText(capsule?.title).toString()
         val message = binding.etMessage.setText(capsule?.message).toString()
-        val receiver_email = binding.receiverEmail.setText(capsule?.receiverEmail).toString()
-
+        val receiverEmail = binding.receiverEmail.setText(capsule?.receiverEmail).toString()
+        val split = capsule?.scheduledOpenAt.toString().split(" ")
+        val (date, time) = split
+        binding.dateSchedule.setText(date).toString()
+        binding.timeSchedule.setText(time).toString()
 
         binding.draftBtn.setOnClickListener{
-            val request = capsule?.let { it1 -> Capsules(it1.id, title, message, null, receiver_email, null, null, null) }
+            val request = capsule?.let { it1 -> Capsules(it1.id, title, message, receiverEmail, "$date $time", null, null) }
             if (request != null) {
                 capsule?.let { it1 ->
                     RetrofitInstance.instance.updateCapsule(it1.id, request).enqueue(object : Callback<Capsules>{
@@ -123,7 +193,7 @@ class CreateCapsule : AppCompatActivity() {
                 this,
                 { _, year, monthOfYear, dayOfMonth ->
                     // Format date as dd/MM/yyyy
-                    val selectedDate = "$year / ${monthOfYear + 1} / $dayOfMonth"
+                    val selectedDate = "$year-${monthOfYear + 1}-$dayOfMonth"
                     editTextDate.setText(selectedDate)  // Set date to EditText
                 },
                 year, month, day
@@ -136,9 +206,6 @@ class CreateCapsule : AppCompatActivity() {
 
     private fun backBtn() {
         binding.btnBack.setOnClickListener {
-            val intent = Intent()
-            intent.putExtra("USERNAME", intent.getStringExtra("USERNAME")) // Pass the username back
-            setResult(RESULT_OK, intent)
             finish()
         }
     }
@@ -149,13 +216,33 @@ class CreateCapsule : AppCompatActivity() {
             val message = binding.etMessage.text.toString()
             val date = binding.dateSchedule.text.toString()
             val time = binding.timeSchedule.text.toString()
-            val receiver_email = binding.receiverEmail.text.toString()
+            val receiverEmail = binding.receiverEmail.text.toString()
+
+            // Prepare text fields as RequestBody
+            val titlePart = title.toRequestBody("text/plain".toMediaTypeOrNull())
+            val messagePart = message.toRequestBody("text/plain".toMediaTypeOrNull())
+            val datePart = "$date $time".toRequestBody("text/plain".toMediaTypeOrNull())
+            val receiverEmailPart = receiverEmail.toRequestBody("text/plain".toMediaTypeOrNull())
+
+            // Prepare image file (if you have an image)
+            val imageFile = File("public/images") // Replace with your actual image path
+            val requestFile = imageFile.asRequestBody("image/*".toMediaTypeOrNull())
+            val imagePart = MultipartBody.Part.createFormData("image", imageFile.name, requestFile)
 
             if(title.isNotEmpty() && message.isNotEmpty() && date.isNotEmpty()) {
                 Log.d("CreateCapsule", "Title: $title, Message: $message, Date: $date, Time: $time")
-                val request = Capsules(0, title, message, null, receiver_email, "$date $time", null, null)
-                RetrofitInstance.instance.createCapsule(request).enqueue(object : Callback<Capsules> {
+
+                RetrofitInstance.instance.createCapsule(
+                    images = listOf(imagePart),
+                    title = titlePart,
+                    message = messagePart,
+                    receiverEmail = receiverEmailPart,
+                    scheduledOpenAt = datePart,
+                    null
+                ).enqueue(object : Callback<Capsules> {
+
                     override fun onResponse(call: Call<Capsules>, response: Response<Capsules>) {
+
                         if (response.isSuccessful && response.body() != null) {
                             val capsule = response.body()?.draft
                             Toast.makeText(this@CreateCapsule, capsule, Toast.LENGTH_SHORT).show()
@@ -167,7 +254,7 @@ class CreateCapsule : AppCompatActivity() {
                     }
                 })
             } else {
-                Toast.makeText(this, "Put something Bitch!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Enter some message", Toast.LENGTH_SHORT).show()
             }
         }
     }

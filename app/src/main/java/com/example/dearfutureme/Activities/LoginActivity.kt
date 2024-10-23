@@ -7,19 +7,21 @@ import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.example.dearfutureme.API.ApiService
+import androidx.lifecycle.ViewModelProvider
 import com.example.dearfutureme.API.RetrofitInstance
 import com.example.dearfutureme.API.TokenManager
-import com.example.dearfutureme.Model.LoginResponse
+import com.example.dearfutureme.APIResponse.LoginResponse
 import com.example.dearfutureme.Model.User
+import com.example.dearfutureme.R
+import com.example.dearfutureme.ViewModel.SharedUserViewModel
 import com.example.dearfutureme.databinding.ActivityMainBinding
+import com.example.dearfutureme.fragments.HomeFragment
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class MainActivity : AppCompatActivity() {
+class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var tokenManager: TokenManager
@@ -34,14 +36,6 @@ class MainActivity : AppCompatActivity() {
         RetrofitInstance.init(this)
         tokenManager = TokenManager(this)
 
-        // Check if user is already logged in
-//        if (tokenManager.getToken() != null) {
-//            val intent = Intent(this@MainActivity, MyCapsuleList::class.java)
-//            startActivity(intent)
-//            finish()
-//        }
-
-
         setupListeners()
     }
 
@@ -51,7 +45,7 @@ class MainActivity : AppCompatActivity() {
             handleLogin()
         }
         binding.createAccount.setOnClickListener {
-            startActivity(Intent(this@MainActivity, SignupUi::class.java))
+            startActivity(Intent(this@LoginActivity, SignupUi::class.java))
         }
     }
 
@@ -92,25 +86,36 @@ class MainActivity : AppCompatActivity() {
 
             override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
                 Log.e("Login Error", "Error: ${t.message}")
-                Toast.makeText(this@MainActivity, "Login error: ${t.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@LoginActivity, "Login error: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
 
     private fun handleSuccessfulLogin(loginResponse: LoginResponse) {
         val token = loginResponse.token
-        val username = loginResponse.user?.name.toString()
+        val newUsername = loginResponse.user
 
-        Log.d("Username", "Username: $username")
+        Log.d("Username", "Username: $newUsername")
 
         token.let {
             RetrofitInstance.setToken(it)
             tokenManager.saveToken(applicationContext, it)
 
-            val intent = Intent(this@MainActivity, MyCapsuleList::class.java).apply {
-                putExtra("USERNAME", "Hello $username!")
+            // Get the ViewModel
+            val userViewModel = ViewModelProvider(this)[SharedUserViewModel::class.java]
+
+// Set the User object in the ViewModel
+
+// Load the Fragment
+            val intent = Intent(this, MyCapsuleList::class.java)
+            val newUser = newUsername
+            if (newUser != null) {
+                userViewModel.setUser(newUser)
+
+                Log.d("LoginActivity", "User set in ViewModel: ${newUser.name}")
+                startActivity(intent)
+                finish()
             }
-            startActivity(intent)
         } ?: run {
             displayError("Token missing, unable to login.")
         }

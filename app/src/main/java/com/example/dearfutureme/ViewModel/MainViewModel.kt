@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.dearfutureme.API.RetrofitInstance
-import com.example.dearfutureme.Model.CapsuleResponse
+import com.example.dearfutureme.APIResponse.CapsuleResponse
 import com.example.dearfutureme.Model.Capsules
 import retrofit2.Call
 import retrofit2.Callback

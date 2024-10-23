@@ -29,7 +29,7 @@ class ThirdIntro : AppCompatActivity() {
         )
 
         binding.btnGetStarted.setOnClickListener{
-            startActivity(Intent(this@ThirdIntro, MainActivity::class.java))
+            startActivity(Intent(this@ThirdIntro, LoginActivity::class.java))
             finish()
         }
 

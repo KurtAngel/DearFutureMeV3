@@ -9,21 +9,20 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dearfutureme.API.RetrofitInstance
 import com.example.dearfutureme.API.TokenManager
-import com.example.dearfutureme.Activities.MainActivity
+import com.example.dearfutureme.Activities.LoginActivity
 import com.example.dearfutureme.Adapter.CapsuleAdapter
-import com.example.dearfutureme.Model.LogoutResponse
-import com.example.dearfutureme.R
+import com.example.dearfutureme.APIResponse.LogoutResponse
 import com.example.dearfutureme.ViewModel.MainViewModel
+import com.example.dearfutureme.ViewModel.SharedUserViewModel
 import com.example.dearfutureme.databinding.FragmentHomeBinding
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -42,7 +41,7 @@ class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
     private val viewModel = MainViewModel()
     private lateinit var tokenManager: TokenManager
-
+    private lateinit var userViewModel: SharedUserViewModel
     // Parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -66,19 +65,27 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
+        userViewModel = ViewModelProvider(requireActivity())[SharedUserViewModel::class.java]
+
+        userViewModel.user.observe(viewLifecycleOwner) { user ->
+            Log.d("HomeFragment", "User observed: ${user?.name}")
+            binding.userNameView.text = "${user?.name}!"
+        }
 
         initCapsuleList()
         setupListeners()
         tokenManager = TokenManager(requireActivity())
-        displayUsername()
+//        displayUsername()
         setGradient()
 
-        val intent = requireActivity().intent
-        intent.getStringExtra("USERNAME")?.let {
-            Log.d("HomeFragment", "Received username: $it")
-            binding.usernameView.text = it // Set the username in the TextView
-        }
+//        val intent = requireActivity().intent
+//        intent.getStringExtra("USERNAME")?.let {
+//            Log.d("HomeFragment", "Received username: $it")
+//            binding.userNameView.text = it // Set the username in the TextView
+//        }
+
     }
+
 
     private fun setupListeners() {
         binding.logoutBtn.setOnClickListener {
@@ -102,10 +109,10 @@ class HomeFragment : Fragment() {
             }
     }
 
-    private fun displayUsername() {
-        val username = requireActivity().intent.getStringExtra("USERNAME")
-        binding.usernameView.text = username ?: "Guest" // Fallback if username is null
-    }
+//    private fun displayUsername() {
+//        val username = requireActivity().intent.getStringExtra("USERNAME")
+//        binding.userNameView.text = username ?: "Guest" // Fallback if username is null
+//    }
 
     private fun initCapsuleList() {
         binding.progressBarCapsuleList.visibility = View.VISIBLE
@@ -130,7 +137,7 @@ class HomeFragment : Fragment() {
                 if (response.isSuccessful) {
                     tokenManager.clearToken()
                     Toast.makeText(requireActivity(), response.body()?.message, Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(requireActivity(), MainActivity::class.java).apply {
+                    startActivity(Intent(requireActivity(), LoginActivity::class.java).apply {
                         flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     })
                 } else {

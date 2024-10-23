@@ -90,7 +90,7 @@
                 android:orientation="vertical">
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
                     <TextView
@@ -101,10 +101,16 @@
                         android:text="Add your images"
                         android:textColor="@color/white"
                         android:textSize="20sp" />
+
                     <androidx.appcompat.widget.AppCompatButton
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Add"/>
+                        android:id="@+id/addImageBtn"
+                        android:layout_width="40dp"
+                        android:layout_height="27dp"
+                        android:layout_marginStart="50dp"
+                        android:background="@drawable/btn_gradient2"
+                        android:gravity="center"
+                        android:text="+"
+                        android:textSize="20sp" />
 
                 </LinearLayout>
                 <!-- GridLayout for Image Placeholders (3x3 grid) -->
@@ -114,44 +120,11 @@
                     android:orientation="horizontal">
 
                     <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerViewImage"
                         android:layout_width="match_parent"
-                        android:layout_height="100dp"
+                        android:layout_height="wrap_content"
                         android:layout_marginHorizontal="25dp"
-                        android:layout_marginTop="10dp">
-
-                        <!-- Image Placeholder 1 -->
-                        <com.google.android.material.imageview.ShapeableImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="91dp"
-                            android:layout_rowWeight="1"
-                            android:layout_columnWeight="1"
-                            android:layout_margin="10dp"
-                            android:background="@drawable/circle_btn"
-                            android:scaleType="centerCrop"
-                            android:src="@drawable/image_placeholder" />
-
-                        <!-- Image Placeholder 2 -->
-                        <com.google.android.material.imageview.ShapeableImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_rowWeight="1"
-                            android:layout_columnWeight="1"
-                            android:layout_margin="10dp"
-                            android:src="@drawable/image_placeholder"
-                            android:scaleType="centerCrop"
-                            android:background="@drawable/circle_btn" />
-
-                        <!-- Image Placeholder 3 -->
-                        <com.google.android.material.imageview.ShapeableImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_rowWeight="1"
-                            android:layout_columnWeight="1"
-                            android:layout_margin="10dp"
-                            android:src="@drawable/image_placeholder"
-                            android:scaleType="centerCrop"
-                            android:background="@drawable/circle_btn" />
-                    </androidx.recyclerview.widget.RecyclerView>
+                        android:layout_marginTop="10dp"/>
 
                 </LinearLayout>
             </LinearLayout>
@@ -190,12 +163,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
+                    android:gravity="center"
                     android:orientation="horizontal">
 
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="95dp"
+                        android:layout_marginEnd="102dp"
                         android:orientation="vertical">
 
                         <TextView
@@ -214,7 +188,7 @@
                             android:layout_height="wrap_content"
                             android:background="@drawable/edittext_bg"
                             android:focusable="false"
-                            android:hint="mm / dd / yy"
+                            android:hint="mm-dd-yy"
                             android:inputType="datetime"
                             android:padding="15dp"
                             android:textColor="@color/white"
@@ -239,7 +213,7 @@
                             android:layout_height="wrap_content"
                             android:background="@drawable/edittext_bg"
                             android:focusable="false"
-                            android:hint="00 : 00 : 00"
+                            android:hint="00:00:00"
                             android:inputType="datetime"
                             android:padding="15dp"
                             android:textColor="@color/white"

@@ -8,7 +8,7 @@ import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.example.dearfutureme.API.RetrofitInstance
-import com.example.dearfutureme.Model.SignUpResponse
+import com.example.dearfutureme.APIResponse.SignUpResponse
 import com.example.dearfutureme.Model.User
 import com.example.dearfutureme.databinding.ActivitySignupuiBinding
 import retrofit2.Call
@@ -51,9 +51,10 @@ class SignupUi : AppCompatActivity() {
                                 val userRegistration = response.body()?.status
 
                                 binding.tvUserExist.text = "$userRegistration"
-                                val intent = Intent(this@SignupUi, MainActivity::class.java).apply {
+                                val intent = Intent(this@SignupUi, LoginActivity::class.java).apply {
                                     putExtra("Email", email)
                                 }
+                                finish()
                                 startActivity(intent)
                             } else {
                                 binding.tvUserExist.text = "Registration Failed"
@@ -100,7 +101,7 @@ class SignupUi : AppCompatActivity() {
 
     private fun loginAcc() {
         binding.loginAccount.setOnClickListener {
-            startActivity(Intent(this@SignupUi, MainActivity::class.java))
+            startActivity(Intent(this@SignupUi, LoginActivity::class.java))
         }
     }
 }

@@ -20,6 +20,26 @@ class FirstIntro : AppCompatActivity() {
         binding = ActivityFirstIntroBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.main.setOnClickListener{
+            startActivity(Intent(this@FirstIntro, SecondIntro::class.java))
+            finish()
+        }
+
+
+//        checkUserIfLogin()
+        setGradient()
+    }
+
+    private fun checkUserIfLogin() {
+        // Check if user is already logged in
+//        if (tokenManager.getToken() != null) {
+//            val intent = Intent(this@FirstIntro, MyCapsuleList::class.java)
+//            startActivity(intent)
+//            finish()
+//        }
+    }
+
+    private fun setGradient() {
         val paint = binding.tvMoments.paint
         val width = paint.measureText(binding.tvMoments.text.toString())
         binding.tvMoments.paint.shader = LinearGradient(
@@ -28,17 +48,5 @@ class FirstIntro : AppCompatActivity() {
                 Color.parseColor("#C868FF")
             ), null, Shader.TileMode.CLAMP
         )
-
-        binding.main.setOnClickListener{
-            startActivity(Intent(this@FirstIntro, SecondIntro::class.java))
-            finish()
-        }
-
-        // Check if user is already logged in
-//        if (tokenManager.getToken() != null) {
-//            val intent = Intent(this@FirstIntro, MyCapsuleList::class.java)
-//            startActivity(intent)
-//            finish()
-//        }
     }
 }

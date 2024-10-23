@@ -27,7 +27,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/usernameView"
+            android:id="@+id/userNameView"
             android:layout_width="186dp"
             android:layout_height="39dp"
             android:background="@drawable/user_name_viewbg_radius"

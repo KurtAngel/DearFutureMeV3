@@ -10,13 +10,12 @@ data class Capsules(
     val id : Int,
     val title : String,
     val message : String,
-    val content : String?,
     @SerializedName("receiver_email")
     val receiverEmail : String?,
     @SerializedName("scheduled_open_at")
     val scheduledOpenAt : String?,
     val draft : String?,
-    val images: Images?
+    val images: List<Image>?
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
@@ -25,8 +24,7 @@ data class Capsules(
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
-        parcel.readString(),
-        parcel.readParcelable(Images::class.java.classLoader)
+        emptyList()
     ) {
     }
 
@@ -34,7 +32,6 @@ data class Capsules(
         parcel.writeInt(id)
         parcel.writeString(title)
         parcel.writeString(message)
-        parcel.writeString(content)
         parcel.writeString(receiverEmail)
         parcel.writeString(scheduledOpenAt)
         parcel.writeString(draft)

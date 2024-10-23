@@ -10,5 +10,6 @@
     <color name="colorAccent">#F25597</color>
     <color name="colorPrimary">#FFFFFFFF</color>
     <color name="titleColor">#2B1253</color>
+    <color name="red">#f54242</color>
 
 </resources>
