@@ -15,7 +15,7 @@ import com.example.dearfutureme.Activities.SharedCapsule
 import com.example.dearfutureme.Model.Capsules
 import com.example.dearfutureme.APIResponse.DeletedCapsuleResponse
 import com.example.dearfutureme.DataRepository.CapsuleCount
-import com.example.dearfutureme.DataRepository.UserRepository
+import com.example.dearfutureme.DataRepository.ImageRepository
 import com.example.dearfutureme.Model.Image
 import com.example.dearfutureme.R
 import com.example.dearfutureme.databinding.ViewholderCapsulelistBinding
@@ -50,7 +50,17 @@ class CapsuleAdapter(private val capsuleList: MutableList<Capsules>) : RecyclerV
                 override fun onResponse(call: Call<Capsules>, response: Response<Capsules>) {
                     if (response.isSuccessful && response.body() != null) {
                         response.body()?.let { capsule ->
-                            Log.d("CapsuleAdapter", "Received capsule: $capsule")
+                            Log.d("CapsuleAdapter", "Received capsule: ${capsule.images}")
+                            val imageList: List<Image> = capsule.images!!
+                            Log.d("CapsuleAdapter", "Received capsule images: $imageList")
+                            val imageUrls = imageList.map {
+                                it.imageUrl
+                            } // Extract URLs from the Image objects
+                            ImageRepository.imageGetter = imageUrls
+                            // Update the ImageRepository or your adapter with the image URLs
+//                            ImageRepository.imageGetter = imageUrls
+                            // Or pass it to your adapter directly
+//                            createCapsule.updateRecyclerView(imageUrls)
                             // Create Intent to navigate to the editing activity
                             val intent = Intent(holder.itemView.context, CreateCapsule::class.java).apply {
                                 putExtra("MODE", "EDIT")
@@ -99,6 +109,7 @@ class CapsuleAdapter(private val capsuleList: MutableList<Capsules>) : RecyclerV
         setupListeners(holder, position ,capsule.id)
 
     }
+    private val imageAdapter = ImageAdapter(mutableListOf())
 
     fun countDrafts(): Int {
         return itemCount

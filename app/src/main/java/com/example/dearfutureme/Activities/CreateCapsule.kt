@@ -19,10 +19,8 @@ import com.example.dearfutureme.Adapter.ImageAdapter
 import com.example.dearfutureme.Model.Capsules
 import com.example.dearfutureme.Model.Image
 import com.example.dearfutureme.databinding.ActivityCreateCapsuleBinding
-import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Call
@@ -36,7 +34,7 @@ class CreateCapsule : AppCompatActivity() {
     lateinit var binding: ActivityCreateCapsuleBinding
     private lateinit var mode: String
     var capsule: Capsules? = null
-    private lateinit var imageAdapter: ImageAdapter
+    private var imageAdapter = ImageAdapter(mutableListOf())
     private val imagesList = mutableListOf<Image>()
     private var username: String ?= null
 
@@ -46,20 +44,18 @@ class CreateCapsule : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(binding.root)
 
-        // Initialize RecyclerView
-        imageAdapter = ImageAdapter(imagesList) // Use your adapter that displays image filenames
-        binding.recyclerViewImage.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        binding.recyclerViewImage.adapter = imageAdapter
+
         mode = intent.getStringExtra("MODE").toString()
         capsule = intent.getParcelableExtra("CAPSULE")
 
+        initImageRecycler()
         sendBtn()
         backBtn()
         setDate()
         setTime()
         addImage()
 
-        username = intent.getStringExtra("USERNAME") ?: "GUEST"
+//        username = intent.getStringExtra("USERNAME") ?: "GUEST"
 
         if(mode == "EDIT"){
             editBtn()
@@ -67,6 +63,12 @@ class CreateCapsule : AppCompatActivity() {
             createBtn()
         }
         hideNavigationBar()
+    }
+
+    private fun initImageRecycler() {
+        imageAdapter = ImageAdapter(imagesList) // Use your adapter that displays image filenames
+        binding.recyclerViewImage.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        binding.recyclerViewImage.adapter = imageAdapter
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -140,9 +142,7 @@ class CreateCapsule : AppCompatActivity() {
                     // Create your Image object
                     val image = Image(
                         id = 0,
-                        imageUrl = imageFile.absolutePath,
-                        capsuleId = capsule?.id ?: 0,
-                        capsuleType = "default"
+                        imageUrl = imageFile.absolutePath
                     )
                     imagesList.add(image) // Add to your image list
                     imageAdapter.notifyItemInserted(imagesList.size - 1)
@@ -196,9 +196,7 @@ class CreateCapsule : AppCompatActivity() {
                 // Create an Image object (if needed) and add it to the imagesList
                 val image = Image(
                     id = 0, // use 0 or another ID value
-                    imageUrl = imageUrl.toString(), // the image URL or file path
-                    capsuleId = capsule?.id ?: 0,
-                    capsuleType = "default"
+                    imageUrl = imageUrl.toString()
                 )
                 imagesList.add(image)
             imageAdapter.notifyDataSetChanged()
@@ -224,7 +222,7 @@ class CreateCapsule : AppCompatActivity() {
                                 val capsule = response.body()?.title
                                 Log.d("CapsuleUpdate", "Capsule updated successfully: $capsule")
                                 //                            Toast.makeText(this@CreateCapsule, editResponse, Toast.LENGTH_SHORT).show()
-                                displayName()
+//                                displayName()
                             } else {
                                 Log.e("CapsuleUpdate", "Error: Response unsuccessful")
                             }
@@ -292,8 +290,6 @@ class CreateCapsule : AppCompatActivity() {
                 val imagePart = MultipartBody.Part.createFormData("images[]", file.name, requestFile)
                 imageParts.add(imagePart)
             }
-            Log.d("Total Images to Upload", "${imageParts.size}")
-            Log.d("Image Upload", "$imagesList")
 
             if(title.isNotEmpty() && message.isNotEmpty() && date.isNotEmpty()) {
                 Log.d("CreateCapsule", "Title: $title, Message: $message, Date: $date, Time: $time")
@@ -328,13 +324,13 @@ class CreateCapsule : AppCompatActivity() {
             }
         }
     }
-
-    private fun displayName() {
-        val intent = Intent()
-        intent.putExtra("USERNAME", intent.getStringExtra("USERNAME")) // Pass the username back
-        setResult(RESULT_OK, intent)
-        finish()
-    }
+//
+//    private fun displayName() {
+//        val intent = Intent()
+//        intent.putExtra("USERNAME", intent.getStringExtra("USERNAME")) // Pass the username back
+//        setResult(RESULT_OK, intent)
+//        finish()
+//    }
 
     private fun sendBtn() {
         binding.sendBtn.setOnClickListener {
@@ -379,7 +375,7 @@ class CreateCapsule : AppCompatActivity() {
                     override fun onResponse(call: Call<Capsules>, response: Response<Capsules>) {
                         Log.d("UploadResponse", "Code: ${response.code()}, Body: ${response.body()}")
                         if (response.isSuccessful && response.body() != null) {
-                            Toast.makeText(this@CreateCapsule, "Capsule created Successfully", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@CreateCapsule, "Capsule has been sent Successfully", Toast.LENGTH_SHORT).show()
                             val intent = Intent(this@CreateCapsule, MyCapsuleList::class.java)
                             startActivity(intent)
                             finish()

@@ -76,13 +76,7 @@ class MyCapsuleList : AppCompatActivity() {
                 .error(R.drawable.baseline_person_24)
                 .into(imageHolder)
         })
-
-//        loadImage()
     }
-
-//    private fun loadImage() {
-//        TODO("Not yet implemented")
-//    }
 
     private fun navViewListener() {
         val drawerLayout: DrawerLayout = binding.drawerLayout
@@ -97,7 +91,7 @@ class MyCapsuleList : AppCompatActivity() {
                     this@MyCapsuleList.startActivity(intent)
                 }
                 R.id.nav_logout -> {
-                    setupListeners()
+                    showLogoutDialog()
                 }
             }
             drawerLayout.closeDrawers()
@@ -105,7 +99,7 @@ class MyCapsuleList : AppCompatActivity() {
         }
     }
 
-    private fun setupListeners() {
+    private fun showLogoutDialog() {
         // Inflate the custom dialog layout
         val customView = layoutInflater.inflate(R.layout.custom_logout_dialog, null)
 
@@ -198,6 +192,20 @@ class MyCapsuleList : AppCompatActivity() {
                 }
                 else -> false
             }
+        }
+    }
+
+    // Override the system back button to trigger the logout dialog
+    override fun onBackPressed() {
+        super.onBackPressed()
+        // Trigger the logout dialog
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
+
+        // Check if the current fragment is the HomeFragment; if so, trigger the logout dialog
+        if (currentFragment is HomeFragment) {
+            showLogoutDialog() // Show logout dialog
+        } else {
+            super.onBackPressed() // Handle default back navigation
         }
     }
 

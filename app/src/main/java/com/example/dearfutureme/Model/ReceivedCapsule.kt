@@ -10,7 +10,7 @@ data class ReceivedCapsule(
     val message : String,
     @SerializedName("receiver_email")
     val receiverEmail : String,
-    @SerializedName("schedule_open_at")
+    @SerializedName("scheduled_open_at")
     val scheduledOpenAt : String,
     val images: List<Image>?
 ): Parcelable {

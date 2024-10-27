@@ -26,6 +26,13 @@ class SharedCapsule : AppCompatActivity() {
         bundleData()
         backBtn()
         setGradient()
+        sendBtn()
+    }
+
+    private fun sendBtn() {
+        binding.sendBtn.setOnClickListener {
+            finish()
+        }
     }
 
     private fun backBtn() {
@@ -43,8 +50,10 @@ class SharedCapsule : AppCompatActivity() {
             tvDate.text = date
             tvTime.text = time
             etEmailAddress.setText(capsule?.receiverEmail)
+
         }
     }
+
 
     private fun setGradient() {
         val paint = binding.tvDearFutureMe.paint

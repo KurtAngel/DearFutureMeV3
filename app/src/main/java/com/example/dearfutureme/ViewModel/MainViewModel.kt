@@ -43,7 +43,6 @@ class MainViewModel : ViewModel() {
                     Log.d("API", "Error: ${response.message()}")
                 }
             }
-
             override fun onFailure(call: Call<CapsuleResponse>, t: Throwable) {
                 _error.value = "Network Error: ${t.message}"
                 Log.e("Log Error", "Network Error: ${t.message}")
