@@ -7,15 +7,15 @@ junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 appcompat = "1.7.0"
 material = "1.12.0"
-activity = "1.9.2"
+activity = "1.9.3"
 constraintlayout = "2.1.4"
 converterGson = "2.9.0"
 logging-interceptor = "4.11.0"
 okhttp = "4.11.0"
 lifecycleLivedataKtx = "2.8.6"
 lifecycleViewmodelKtx = "2.8.6"
-navigationFragmentKtx = "2.8.1"
-navigationUiKtx = "2.8.1"
+navigationFragmentKtx = "2.8.3"
+navigationUiKtx = "2.8.3"
 glide = "4.12.0"
 
 
@@ -45,6 +45,5 @@ glide-compiler = { module = "com.github.bumptech.glide:compiler", version.ref = 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-kapt = { id = "org.jetbrains.kotlin.kapt" }
 
 

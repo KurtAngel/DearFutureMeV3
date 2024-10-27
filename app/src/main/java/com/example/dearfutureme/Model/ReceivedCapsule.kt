@@ -10,9 +10,10 @@ data class ReceivedCapsule(
     val message : String,
     @SerializedName("receiver_email")
     val receiverEmail : String,
-    @SerializedName("schedule_open_at")
+    @SerializedName("scheduled_open_at")
     val scheduledOpenAt : String,
-    val images: List<Image>?
+    val images: List<Image>?,
+    val sender: Sender
 ): Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
@@ -21,6 +22,7 @@ data class ReceivedCapsule(
         parcel.readString().toString(),
         parcel.readString().toString(),
         emptyList()
+        ,Sender("","","")
     ) {
     }
 

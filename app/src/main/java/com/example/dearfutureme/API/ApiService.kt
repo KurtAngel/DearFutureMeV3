@@ -8,9 +8,11 @@ import com.example.dearfutureme.APIResponse.ProfilePicResponse
 import com.example.dearfutureme.APIResponse.ReceivedCapsuleResponse
 import com.example.dearfutureme.APIResponse.SignUpResponse
 import com.example.dearfutureme.APIResponse.UploadResponse
+import com.example.dearfutureme.Model.CapsuleUpdateResponse
 import com.example.dearfutureme.Model.Capsules
 import com.example.dearfutureme.Model.ReceivedCapsule
 import com.example.dearfutureme.Model.User
+import com.example.dearfutureme.Model.Users
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
@@ -38,6 +40,9 @@ interface ApiService {
     @POST("logout") // Adjust the endpoint according to your API
     fun logout(): Call<LogoutResponse>
 
+    @GET("users")
+    fun getAllUsers(): Call<Users>
+
     @Multipart
     @POST("profile/upload")
     fun uploadProfileImage(@Part image: MultipartBody.Part): Call<UploadResponse>
@@ -64,6 +69,11 @@ interface ApiService {
     @Headers("Content-Type: application/json")
     @PUT("capsules/{id}")
     fun updateCapsule(@Path("id") id: Int, @Body capsule: Capsules): Call<Capsules>
+//    @PUT("capsules/{id}")
+//    fun updateCapsule(
+//        @Path("id") capsuleId: Int,
+//        @Body request: CapsuleUpdateResponse // Use @Body instead of @Part
+//    ): Call<Capsules>
 
     @GET("receivedCapsules")
     fun getReceivedCapsuleList(): Call<ReceivedCapsuleResponse>

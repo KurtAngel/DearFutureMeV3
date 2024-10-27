@@ -259,7 +259,7 @@
                     android:layout_marginTop="5dp"
                     android:background="@drawable/btn_gradient"
                     android:fontFamily="@font/poppins_bold"
-                    android:text="Lock "
+                    android:text="Share"
                     android:textColor="@color/white"
                     android:textSize="15dp" />
             </LinearLayout>
@@ -268,10 +268,11 @@
                 android:id="@+id/receiverEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="150dp"
+                android:layout_marginBottom="300dp"
                 android:ems="10"
-                android:inputType="text"
-                android:hint="Email"
+                android:inputType="none"
+                android:focusable="false"
+                android:hint="Select User"
                 android:layout_marginHorizontal="25dp"
                 android:layout_marginTop="5dp"
                 android:background="@drawable/edittext2_bg"

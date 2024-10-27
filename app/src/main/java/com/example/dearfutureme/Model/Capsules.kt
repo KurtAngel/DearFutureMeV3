@@ -15,7 +15,7 @@ data class Capsules(
     @SerializedName("scheduled_open_at")
     val scheduledOpenAt : String?,
     val draft : String?,
-    val images: List<Image>?
+    val images: List<Image>
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readInt(),

@@ -43,7 +43,6 @@ class HomeFragment : Fragment() {
 
     private lateinit var binding: FragmentHomeBinding
     private val viewModel = MainViewModel()
-    private lateinit var tokenManager: TokenManager
     private lateinit var capsuleAdapter: CapsuleAdapter
     private var capsuleList: MutableList<Capsules> = mutableListOf()
     // Parameters

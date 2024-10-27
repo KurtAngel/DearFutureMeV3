@@ -15,8 +15,8 @@ class ImageAdapter(private val imageList: MutableList<Image>) : RecyclerView.Ada
         fun bind(image: Image) {
             // Load image using Glide or any other image loading library
             Glide.with(itemView.context)
-                .load(image.imageUrl) // Assuming 'image' has a property 'image' that holds the URL or URI
-                .into(binding.IvImageHolder) // Ensure you have an ImageView with this ID in your layout
+                .load(image.imageUrl)
+                .into(binding.IvImageHolder)
         }
     }
 

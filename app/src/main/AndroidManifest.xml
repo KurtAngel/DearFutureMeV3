@@ -5,7 +5,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
 
     <application
         android:allowBackup="true"
@@ -22,11 +23,6 @@
         <activity
             android:name=".Activities.ProfileSettingsActivity"
             android:exported="false" />
-        <activity
-            android:name=".Activities.AccountSettings"
-            android:exported="false"
-            android:label="@string/title_activity_account_settings"
-            android:theme="@style/Theme.DearFutureMe.NoActionBar" />
         <activity
             android:name=".Activities.ReceivedCapsuleView"
             android:exported="false" />
