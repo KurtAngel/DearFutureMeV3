@@ -9,7 +9,7 @@
     tools:context=".fragments.HomeFragment">
 
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/fragmentContainer"
+        android:id="@+id/fragmentHomeContainer"
         android:layout_width="match_parent"
         android:layout_height="820dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -19,8 +19,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
         android:layout_width="356dp"
-        android:layout_height="69dp"
-        android:layout_marginTop="42dp"
+        android:layout_height="75dp"
+        android:layout_marginTop="45dp"
         app:layout_constraintBottom_toTopOf="@+id/searchView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -28,9 +28,10 @@
 
         <TextView
             android:id="@+id/userNameView"
-            android:layout_width="186dp"
-            android:layout_height="39dp"
+            android:layout_width="wrap_content"
+            android:layout_height="42dp"
             android:background="@drawable/user_name_viewbg_radius"
+            android:fontFamily="@font/poppins"
             android:gravity="center"
             android:text="Username"
             android:textColor="@color/white"
@@ -40,13 +41,25 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/logoutBtn"
-            android:layout_width="40dp"
-            android:layout_height="39dp"
-            android:background="@drawable/baseline_logout_24"
+            android:id="@+id/settingsBtn"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:background="@drawable/setting_fill2"
             android:backgroundTint="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins_medium"
+            android:text="Hello"
+            android:textColor="@color/white"
+            android:textSize="20dp"
+            app:layout_constraintBottom_toTopOf="@+id/userNameView"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -60,7 +73,7 @@
         android:layout_marginEnd="45dp"
         android:background="@drawable/search_view_bg"
         android:iconifiedByDefault="false"
-        android:queryHint="Search Here.........."
+        android:queryHint="Search Titles. . . . . ."
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -120,12 +133,26 @@
                     android:id="@+id/recyclerViewCapsule"
                     android:layout_width="match_parent"
                     android:clipToPadding="false"
-                    android:layout_height="525dp"
+                    android:layout_height="596dp"
                     android:layout_gravity="center"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tvCapsuleFound"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="32dp"
+                    android:text=""
+                    android:textColor="@color/black"
+                    android:textAlignment="center"
+                    android:textSize="20dp"
+                    android:fontFamily="@font/poppins"
+                    app:layout_constraintBottom_toTopOf="@+id/progressBarCapsuleList"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -8,15 +8,12 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import com.example.dearfutureme.API.RetrofitInstance
 import com.example.dearfutureme.API.TokenManager
 import com.example.dearfutureme.APIResponse.LoginResponse
+import com.example.dearfutureme.DataRepository.UserRepository
 import com.example.dearfutureme.Model.User
-import com.example.dearfutureme.R
-import com.example.dearfutureme.ViewModel.SharedUserViewModel
 import com.example.dearfutureme.databinding.ActivityMainBinding
-import com.example.dearfutureme.fragments.HomeFragment
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -37,6 +34,16 @@ class LoginActivity : AppCompatActivity() {
         tokenManager = TokenManager(this)
 
         setupListeners()
+
+        setEmailAfterSignUp()
+
+    }
+
+    private fun setEmailAfterSignUp() {
+        binding.apply {
+            val email = intent.getStringExtra("Email")
+            etEmailAddress.setText(email)
+        }
     }
 
     private fun setupListeners() {
@@ -57,7 +64,7 @@ class LoginActivity : AppCompatActivity() {
             hideMessageAfterDelay()
         } else {
             if (validateInputs(email, password)) {
-            performLogin(User(null, email, password))
+            performLogin(User(null, email, password, null))
         } else {
             displayError("Please enter a valid Email and Password")
             hideMessageAfterDelay()
@@ -66,11 +73,11 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun validateInputs(email: String, password: String): Boolean {
-//        val emailPattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$".toRegex()
-//        val passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#\$%^&+=!]).{8,}$".toRegex()
 
-        return email.isNotEmpty() && password.isNotEmpty()
-//                && email.matches(emailPattern)&& password.matches(passwordPattern)
+        val emailPattern = "^[a-zA-Z0-9._]+@[a-zA-Z0-9._-]+\\.[a-zA-Z]{2,}$".toRegex()
+        val passwordPattern = "^[a-zA-Z0-9_-]{8,}$".toRegex()
+
+        return email.isNotEmpty() && password.isNotEmpty() && email.matches(emailPattern)&& password.matches(passwordPattern)
     }
 
     private fun performLogin(user: User) {
@@ -79,6 +86,8 @@ class LoginActivity : AppCompatActivity() {
 
                 if (response.isSuccessful && response.body() != null) {
                     handleSuccessfulLogin(response.body()!!)
+                    UserRepository.username = response.body()!!.user?.name
+                    UserRepository.email = response.body()!!.user?.email
                 } else {
                     displayError("Login Failed, Try Again!")
                 }
@@ -93,29 +102,15 @@ class LoginActivity : AppCompatActivity() {
 
     private fun handleSuccessfulLogin(loginResponse: LoginResponse) {
         val token = loginResponse.token
-        val newUsername = loginResponse.user
 
-        Log.d("Username", "Username: $newUsername")
+        Log.d("Username", "Username: $loginResponse")
 
         token.let {
-            RetrofitInstance.setToken(it)
-            tokenManager.saveToken(applicationContext, it)
+            RetrofitInstance.tokenManager.saveToken(it)
 
-            // Get the ViewModel
-            val userViewModel = ViewModelProvider(this)[SharedUserViewModel::class.java]
-
-// Set the User object in the ViewModel
-
-// Load the Fragment
-            val intent = Intent(this, MyCapsuleList::class.java)
-            val newUser = newUsername
-            if (newUser != null) {
-                userViewModel.setUser(newUser)
-
-                Log.d("LoginActivity", "User set in ViewModel: ${newUser.name}")
-                startActivity(intent)
-                finish()
-            }
+            val intent = Intent(this@LoginActivity, MyCapsuleList::class.java)
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+            startActivity(intent)
         } ?: run {
             displayError("Token missing, unable to login.")
         }

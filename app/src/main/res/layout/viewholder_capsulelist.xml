@@ -22,11 +22,12 @@
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="35dp"
+        android:layout_marginBottom="-15dp"
         android:elevation="10dp"
         android:fontFamily="@font/poppins_bold"
         android:text="A letter to my self"
         android:textColor="@color/titleColor"
-        android:textSize="20sp"
+        android:textSize="15sp"
         app:layout_constraintBottom_toTopOf="@+id/IvCapsule"
         app:layout_constraintEnd_toEndOf="@+id/IvCapsule"
         app:layout_constraintStart_toStartOf="@+id/IvCapsule" />
@@ -56,8 +57,10 @@
 
     <ImageView
         android:id="@+id/deleteCapsuleBtn"
-        android:layout_width="54dp"
-        android:layout_height="56dp"
+        android:layout_width="38dp"
+        android:layout_height="41dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:clickable="true"
         android:focusable="true"
         app:layout_constraintStart_toStartOf="@+id/IvCapsule"

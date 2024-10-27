@@ -4,17 +4,25 @@ import android.content.Context
 import android.content.SharedPreferences
 
 class TokenManager(context: Context) {
-     val prefs: SharedPreferences = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
 
-    fun saveToken(context: Context, token: String) {
-        prefs.edit().putString("auth_token", token).apply()
+    private val prefs: SharedPreferences = context.getSharedPreferences("prefs", Context.MODE_PRIVATE)
+
+    companion object {
+        private const val TOKEN_KEY = "auth_token"
     }
 
+    // Save token
+    fun saveToken(token: String) {
+        prefs.edit().putString(TOKEN_KEY, token).apply()
+    }
+
+    // Get token
     fun getToken(): String? {
-        return prefs.getString("auth_token", null)
+        return prefs.getString(TOKEN_KEY, null)
     }
 
+    // Clear token
     fun clearToken() {
-        prefs.edit().remove("auth_token").apply()
+        prefs.edit().remove(TOKEN_KEY).apply()
     }
 }

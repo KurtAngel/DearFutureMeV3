@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.example.dearfutureme.API.RetrofitInstance
@@ -20,7 +21,6 @@ class SignupUi : AppCompatActivity() {
     private lateinit var binding: ActivitySignupuiBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivitySignupuiBinding.inflate(layoutInflater)
@@ -36,21 +36,22 @@ class SignupUi : AppCompatActivity() {
             val email = binding.etEmailAddress.text.toString()
             val password = binding.etPassword.text.toString()
 
-            if (checkOneFieldIsEmpty(username, email, password)){
+            if (checkOneFieldIsEmpty(username, email, password)) {
                 binding.tvUserExist.text = "Fill all the requirements"
                 hideMessageAfterDelay()
-
             } else {
-                if (validateInputs(username, email, password)) {
-                    val request = User(username, email, password)
+                if (validateInputs(email, password, username)) {  // Corrected parameter order
+                    val request = User(username, email, password, null)
 
                     RetrofitInstance.instance.registerUser(request).enqueue(object : Callback<SignUpResponse> {
-                        override fun onResponse(call: Call<SignUpResponse>, response: Response<SignUpResponse>
-                        ) {
+                        override fun onResponse(call: Call<SignUpResponse>, response: Response<SignUpResponse>) {
                             if (response.isSuccessful && response.body() != null) {
                                 val userRegistration = response.body()?.status
-
                                 binding.tvUserExist.text = "$userRegistration"
+
+                                // Show a success message before redirecting to login
+                                Toast.makeText(this@SignupUi, "Registration successful! Please log in.", Toast.LENGTH_SHORT).show()
+
                                 val intent = Intent(this@SignupUi, LoginActivity::class.java).apply {
                                     putExtra("Email", email)
                                 }
@@ -64,6 +65,8 @@ class SignupUi : AppCompatActivity() {
 
                         override fun onFailure(call: Call<SignUpResponse>, t: Throwable) {
                             Log.e("Registration Error", "Error: ${t.message}")
+                            binding.tvUserExist.text = "Registration failed. Please try again."
+                            hideMessageAfterDelay()
                         }
                     })
                 } else {
@@ -78,20 +81,18 @@ class SignupUi : AppCompatActivity() {
         return username.isEmpty() || email.isEmpty() || password.isEmpty()
     }
 
-
     private fun validateInputs(email: String, password: String, username: String): Boolean {
         val usernamePattern = "^[a-zA-Z0-9_-]{3,15}$".toRegex()
-//        val emailPattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$".toRegex()
-//        val passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#\$%^&+=!]).{8,}$".toRegex()
+        val emailPattern = "^[a-zA-Z0-9._]+@[a-zA-Z0-9._-]+\\.[a-zA-Z]{2,}$".toRegex()
+        val passwordPattern = "^[a-zA-Z0-9_-]{8,}$".toRegex()
 
         val isUsernameValid = username.matches(usernamePattern)
-//        val isEmailValid = email.matches(emailPattern)
+        val isEmailValid = email.matches(emailPattern)
+        val isPasswordValid = password.matches(passwordPattern)
 
-        return isUsernameValid
-//                && isEmailValid
+        return isUsernameValid && isEmailValid && isPasswordValid
 
     }
-
 
     private fun hideMessageAfterDelay() {
         Handler(Looper.getMainLooper()).postDelayed({
@@ -105,3 +106,4 @@ class SignupUi : AppCompatActivity() {
         }
     }
 }
+

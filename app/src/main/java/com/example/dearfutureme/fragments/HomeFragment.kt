@@ -1,6 +1,5 @@
 package com.example.dearfutureme.fragments
 
-import android.content.Intent
 import android.graphics.Color
 import android.graphics.LinearGradient
 import android.graphics.Shader
@@ -9,23 +8,23 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
+import android.widget.SearchView
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.dearfutureme.API.RetrofitInstance
+import androidx.recyclerview.widget.RecyclerView
 import com.example.dearfutureme.API.TokenManager
-import com.example.dearfutureme.Activities.LoginActivity
+import com.example.dearfutureme.DataRepository.UserRepository
 import com.example.dearfutureme.Adapter.CapsuleAdapter
-import com.example.dearfutureme.APIResponse.LogoutResponse
+import com.example.dearfutureme.DataRepository.CapsuleCount
+import com.example.dearfutureme.Model.Capsules
+import com.example.dearfutureme.R
+import com.example.dearfutureme.ViewModel.CapsuleViewModel
 import com.example.dearfutureme.ViewModel.MainViewModel
-import com.example.dearfutureme.ViewModel.SharedUserViewModel
 import com.example.dearfutureme.databinding.FragmentHomeBinding
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
@@ -36,12 +35,17 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 
+//interface OnLogoutListener {
+//    fun onLogoutRequested()
+//}
+
 class HomeFragment : Fragment() {
 
     private lateinit var binding: FragmentHomeBinding
     private val viewModel = MainViewModel()
     private lateinit var tokenManager: TokenManager
-    private lateinit var userViewModel: SharedUserViewModel
+    private lateinit var capsuleAdapter: CapsuleAdapter
+    private var capsuleList: MutableList<Capsules> = mutableListOf()
     // Parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -52,7 +56,6 @@ class HomeFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
-
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View
@@ -65,37 +68,41 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
-        userViewModel = ViewModelProvider(requireActivity())[SharedUserViewModel::class.java]
-
-        userViewModel.user.observe(viewLifecycleOwner) { user ->
-            Log.d("HomeFragment", "User observed: ${user?.name}")
-            binding.userNameView.text = "${user?.name}!"
-        }
 
         initCapsuleList()
-        setupListeners()
-        tokenManager = TokenManager(requireActivity())
-//        displayUsername()
+        displayUsername()
         setGradient()
+        initNavDrawer()
 
-//        val intent = requireActivity().intent
-//        intent.getStringExtra("USERNAME")?.let {
-//            Log.d("HomeFragment", "Received username: $it")
-//            binding.userNameView.text = it // Set the username in the TextView
-//        }
 
+        capsuleAdapter = CapsuleAdapter(capsuleList)
+        val counter = capsuleAdapter.countDrafts()
+        Log.d("Draft Capsule Count", "Count: $counter")
+        CapsuleCount.draftCapsule = counter
+        binding.recyclerViewCapsule.adapter = capsuleAdapter
+
+        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return true
+            }
+            override fun onQueryTextChange(newText: String?): Boolean {
+                capsuleAdapter.filter(newText ?: "")
+                return true
+            }
+        })
+    }
+
+    private fun initNavDrawer() {
+        val drawerLayout = requireActivity().findViewById<DrawerLayout>(R.id.drawer_layout)
+        binding.settingsBtn.setOnClickListener {
+            drawerLayout?.openDrawer(GravityCompat.START)
+        }
     }
 
 
-    private fun setupListeners() {
-        binding.logoutBtn.setOnClickListener {
-            val builder = AlertDialog.Builder(requireActivity())
-            builder.setTitle("Logout")
-            builder.setMessage("Are you sure you want to logout?")
-            builder.setPositiveButton("Yes") { dialog, which -> logoutUser() }
-            builder.setNegativeButton("No") { dialog, which -> dialog.dismiss() }
-            builder.create().show()
-        }
+    private fun displayUsername() {
+        val username = UserRepository.username
+        binding.userNameView.text = username.toString()
     }
 
     companion object {
@@ -109,15 +116,9 @@ class HomeFragment : Fragment() {
             }
     }
 
-//    private fun displayUsername() {
-//        val username = requireActivity().intent.getStringExtra("USERNAME")
-//        binding.userNameView.text = username ?: "Guest" // Fallback if username is null
-//    }
 
     private fun initCapsuleList() {
-        binding.progressBarCapsuleList.visibility = View.VISIBLE
 
-        // Use viewLifecycleOwner to observe LiveData
         viewModel.capsuleList.observe(viewLifecycleOwner, Observer {
             binding.recyclerViewCapsule.layoutManager = LinearLayoutManager(
                 requireActivity(),
@@ -125,30 +126,13 @@ class HomeFragment : Fragment() {
                 false
             )
             binding.recyclerViewCapsule.adapter = CapsuleAdapter(it.toMutableList())
-            binding.progressBarCapsuleList.visibility = View.GONE
         })
         viewModel.loadCapsules()
-    }
 
-    private fun logoutUser() {
-
-        RetrofitInstance.instance.logout().enqueue(object : Callback<LogoutResponse> {
-            override fun onResponse(call: Call<LogoutResponse>, response: Response<LogoutResponse>) {
-                if (response.isSuccessful) {
-                    tokenManager.clearToken()
-                    Toast.makeText(requireActivity(), response.body()?.message, Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(requireActivity(), LoginActivity::class.java).apply {
-                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    })
-                } else {
-                    Toast.makeText(requireActivity(), "Logout failed: ${response.message()}", Toast.LENGTH_SHORT).show()
-                }
-            }
-
-            override fun onFailure(call: Call<LogoutResponse>, t: Throwable) {
-                Toast.makeText(requireActivity(), "Logout failed: ${t.message}", Toast.LENGTH_SHORT).show()
-            }
+        viewModel.error.observe(viewLifecycleOwner, Observer {
+            binding.tvCapsuleFound.text = viewModel.error.value
         })
+            binding.progressBarCapsuleList.visibility = View.GONE
     }
 
     private fun setGradient() {

@@ -2,15 +2,19 @@ package com.example.dearfutureme.Model
 
 import android.os.Parcel
 import android.os.Parcelable
+import com.google.gson.annotations.SerializedName
 
 data class User(
     val name: String?,
     val email: String,
-    val password: String
+    val password: String,
+    @SerializedName("profile_pic")
+    val profilePic: String?
 ): Parcelable {
     constructor(parcel: Parcel) : this(
+        parcel.readString() ?: "",
         parcel.readString().toString(),
-        parcel.readString().toString(),
+        parcel.readString() ?: "",
         parcel.readString() ?: ""
     ) {
     }

@@ -6,7 +6,7 @@
     android:layout_height="wrap_content">
 
     <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/IvCapsule"
+        android:id="@+id/IvReceivedCapsule"
         android:layout_width="match_parent"
         android:layout_height="150dp"
         android:layout_margin="15dp"
@@ -23,14 +23,15 @@
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="35dp"
+        android:layout_marginBottom="-20dp"
         android:elevation="10dp"
         android:fontFamily="@font/poppins_bold"
         android:text="A letter to my self"
-        android:textColor="@color/titleColor"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/IvCapsule"
-        app:layout_constraintEnd_toEndOf="@+id/IvCapsule"
-        app:layout_constraintStart_toStartOf="@+id/IvCapsule" />
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toTopOf="@+id/IvReceivedCapsule"
+        app:layout_constraintEnd_toEndOf="@+id/IvReceivedCapsule"
+        app:layout_constraintStart_toStartOf="@+id/IvReceivedCapsule" />
 
     <ImageView
         android:id="@+id/imageView4"
@@ -39,21 +40,11 @@
         android:contentDescription="TODO"
         android:clickable="true"
         android:focusable="true"
-        app:layout_constraintBottom_toBottomOf="@+id/IvCapsule"
-        app:layout_constraintEnd_toEndOf="@+id/IvCapsule"
-        app:layout_constraintStart_toStartOf="@+id/IvCapsule"
-        app:layout_constraintTop_toTopOf="@+id/IvCapsule"
+        app:layout_constraintBottom_toBottomOf="@+id/IvReceivedCapsule"
+        app:layout_constraintEnd_toEndOf="@+id/IvReceivedCapsule"
+        app:layout_constraintStart_toStartOf="@+id/IvReceivedCapsule"
+        app:layout_constraintTop_toTopOf="@+id/IvReceivedCapsule"
         app:srcCompat="@drawable/unlocked_pad" />
-
-    <ImageView
-        android:id="@+id/shareBtn"
-        android:layout_width="77dp"
-        android:layout_height="75dp"
-        android:clickable="true"
-        android:focusable="true"
-        app:layout_constraintEnd_toEndOf="@+id/IvCapsule"
-        app:layout_constraintTop_toTopOf="@+id/IvCapsule"
-        app:srcCompat="@drawable/share_button" />
 
     <ImageView
         android:id="@+id/deleteCapsuleBtn"
@@ -61,8 +52,8 @@
         android:layout_height="53dp"
         android:clickable="true"
         android:focusable="true"
-        app:layout_constraintStart_toStartOf="@+id/IvCapsule"
-        app:layout_constraintTop_toTopOf="@+id/IvCapsule"
+        app:layout_constraintStart_toStartOf="@+id/IvReceivedCapsule"
+        app:layout_constraintTop_toTopOf="@+id/IvReceivedCapsule"
         app:srcCompat="@drawable/delete_btn" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

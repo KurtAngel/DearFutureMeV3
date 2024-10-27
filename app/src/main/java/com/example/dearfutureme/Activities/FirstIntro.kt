@@ -7,7 +7,6 @@ import android.graphics.Shader
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import com.example.dearfutureme.API.RetrofitInstance.tokenManager
 import com.example.dearfutureme.databinding.ActivityFirstIntroBinding
 
 class FirstIntro : AppCompatActivity() {

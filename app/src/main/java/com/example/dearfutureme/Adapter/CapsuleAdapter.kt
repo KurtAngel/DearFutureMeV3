@@ -5,6 +5,7 @@ import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
@@ -13,6 +14,9 @@ import com.example.dearfutureme.Activities.CreateCapsule
 import com.example.dearfutureme.Activities.SharedCapsule
 import com.example.dearfutureme.Model.Capsules
 import com.example.dearfutureme.APIResponse.DeletedCapsuleResponse
+import com.example.dearfutureme.DataRepository.CapsuleCount
+import com.example.dearfutureme.DataRepository.UserRepository
+import com.example.dearfutureme.Model.Image
 import com.example.dearfutureme.R
 import com.example.dearfutureme.databinding.ViewholderCapsulelistBinding
 import retrofit2.Call
@@ -22,7 +26,7 @@ import retrofit2.Response
 class CapsuleAdapter(private val capsuleList: MutableList<Capsules>) : RecyclerView.Adapter<CapsuleAdapter.CapsuleViewHolder>() {
 
     private lateinit var context:Context
-
+    private var filteredList: MutableList<Capsules> = capsuleList.toMutableList()
 
     inner class CapsuleViewHolder(val binding: ViewholderCapsulelistBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -34,7 +38,9 @@ class CapsuleAdapter(private val capsuleList: MutableList<Capsules>) : RecyclerV
     }
 
     override fun onBindViewHolder(holder: CapsuleViewHolder, position: Int) {
-        val capsule = capsuleList[position]
+        val capsule = filteredList[position]
+        CapsuleCount.draftCapsule = CapsuleCount.draftCapsule!! + 1
+        Log.d("Capsule Position", "Position: $position,\n  Capsule: $capsule")
         holder.binding.IvCapsule.setImageResource(R.drawable.draft_capsule)
         holder.binding.tvTitle.text = capsule.title
 
@@ -42,7 +48,7 @@ class CapsuleAdapter(private val capsuleList: MutableList<Capsules>) : RecyclerV
             RetrofitInstance.instance.getCapsuleById(capsule.id).enqueue(object : Callback<Capsules>
             {
                 override fun onResponse(call: Call<Capsules>, response: Response<Capsules>) {
-                    if (response.isSuccessful) {
+                    if (response.isSuccessful && response.body() != null) {
                         response.body()?.let { capsule ->
                             Log.d("CapsuleAdapter", "Received capsule: $capsule")
                             // Create Intent to navigate to the editing activity
@@ -92,25 +98,62 @@ class CapsuleAdapter(private val capsuleList: MutableList<Capsules>) : RecyclerV
 
         setupListeners(holder, position ,capsule.id)
 
-//        updateCapsuleList(capsuleList)
     }
 
-    override fun getItemCount(): Int = capsuleList.size
+    fun countDrafts(): Int {
+        return itemCount
+    }
+    // Filter the capsule list based on the query
+    fun filter(query: String) {
+        filteredList = if (query.isEmpty()) {
+            capsuleList.toMutableList()  // Show all items if the query is empty
+        } else {
+            capsuleList.filter { capsule ->
+                capsule.title.contains(query, ignoreCase = true)  // Filter by title
+            }.toMutableList()
+        }
+        notifyDataSetChanged()  // Notify RecyclerView to update the display
+    }
+
+    override fun getItemCount(): Int = filteredList.size
 
     fun updateCapsuleList(newCapsuleList: List<Capsules>) {
-        capsuleList.clear()
-        capsuleList.addAll(newCapsuleList)
+        filteredList.clear()
+        filteredList.addAll(newCapsuleList)
         notifyDataSetChanged()
     }
 
     private fun setupListeners(holder: CapsuleViewHolder, position: Int, capsuleId: Int) {
         holder.binding.deleteCapsuleBtn.setOnClickListener {
+            // Get the layoutInflater from the context
+            val layoutInflater = LayoutInflater.from(holder.itemView.context)
+
+            // Inflate the custom dialog layout
+            val customView = layoutInflater.inflate(R.layout.custom_delete_dialog, null)
+
+            // Build the AlertDialog
             val builder = AlertDialog.Builder(holder.itemView.context)
-            builder.setTitle("Delete Capsule")
-            builder.setMessage("Are you sure you want to delete this capsule?")
-            builder.setPositiveButton("Yes") { dialog, which -> deleteCapsule(position, capsuleId) }
-            builder.setNegativeButton("No") { dialog, which -> dialog.dismiss() }
-            builder.create().show()
+            builder.setView(customView)
+
+            // Create and show the dialog
+            val dialog = builder.create()
+
+            dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+            // Set up custom dialog's UI elements
+            val yesButton = customView.findViewById<Button>(R.id.btnYes)
+            val noButton = customView.findViewById<Button>(R.id.btnNo)
+
+            yesButton.setOnClickListener {
+                deleteCapsule(position, capsuleId)
+                dialog.dismiss()
+            }
+
+            noButton.setOnClickListener {
+                dialog.dismiss()
+            }
+
+            dialog.show()
         }
     }
 
@@ -124,9 +167,9 @@ class CapsuleAdapter(private val capsuleList: MutableList<Capsules>) : RecyclerV
                         Toast.makeText(context, "$deleteResponse", Toast.LENGTH_SHORT).show()
 
                         // Remove the capsule from the list and notify the adapter
-                        capsuleList.removeAt(position)
+                        filteredList.removeAt(position)
                         notifyItemRemoved(position)
-                        notifyItemRangeChanged(position, capsuleList.size)
+                        notifyItemRangeChanged(position, filteredList.size)
                     } else {
                         // Handle the error when the response is not successful
                         Toast.makeText(context, "Failed to delete the capsule", Toast.LENGTH_SHORT).show()

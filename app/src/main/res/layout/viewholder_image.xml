@@ -12,21 +12,22 @@
         android:layout_marginHorizontal="20dp"
         android:background="@drawable/corner_radius"
         android:scaleType="centerCrop"
+        app:shapeAppearanceOverlay="@style/CircleImageView2"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.499"
         tools:srcCompat="@tools:sample/avatars" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/button2"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:background="@drawable/btn_gradient"
-        android:elevation="20dp"
-        android:text="X"
+    <ImageView
+        android:id="@+id/removeImage"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
         app:layout_constraintEnd_toEndOf="@+id/IvImageHolder"
-        app:layout_constraintTop_toTopOf="@+id/IvImageHolder" />
+        app:layout_constraintTop_toTopOf="@+id/IvImageHolder"
+        app:srcCompat="@drawable/delete_btn" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

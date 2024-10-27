@@ -4,35 +4,49 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".shared_Capsule">
+    android:background="@drawable/share_capsule_background"
+    tools:context=".fragments.ShareCapsuleFragment">
 
     <!-- TODO: Update blank fragment layout -->
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="60dp"
-        android:layout_marginRight="20dp">
+        android:layout_marginTop="60dp">
 
         <TextView
-            android:id="@+id/textView11"
+            android:id="@+id/tvShared"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/poppins_bold"
-            android:text="Received Capsules"
-            android:textColor="@color/black"
+            android:text="Shared Capsules"
+            android:textColor="@drawable/background_gradient"
             android:textSize="28dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:layout_width="369dp"
+            android:id="@+id/recyclerViewCapsule"
+            android:layout_width="match_parent"
             android:layout_height="781dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView11" />
+            app:layout_constraintTop_toBottomOf="@+id/tvShared" />
+
+        <TextView
+            android:id="@+id/tvNoCapsule"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="82dp"
+            android:fontFamily="@font/poppins_bold"
+            android:text=""
+            android:textColor="@color/white"
+            android:textSize="22sp"
+            app:layout_constraintBottom_toBottomOf="@+id/recyclerViewCapsule"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvShared" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
+import android.view.View
 import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -18,6 +19,7 @@ import com.example.dearfutureme.Adapter.ImageAdapter
 import com.example.dearfutureme.Model.Capsules
 import com.example.dearfutureme.Model.Image
 import com.example.dearfutureme.databinding.ActivityCreateCapsuleBinding
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -36,6 +38,7 @@ class CreateCapsule : AppCompatActivity() {
     var capsule: Capsules? = null
     private lateinit var imageAdapter: ImageAdapter
     private val imagesList = mutableListOf<Image>()
+    private var username: String ?= null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,23 +59,39 @@ class CreateCapsule : AppCompatActivity() {
         setTime()
         addImage()
 
+        username = intent.getStringExtra("USERNAME") ?: "GUEST"
+
         if(mode == "EDIT"){
             editBtn()
         } else {
             createBtn()
         }
+        hideNavigationBar()
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) {
+            hideNavigationBar()
+        }
+    }
+
+    private fun hideNavigationBar() {
+        val decorView = window.decorView
+        decorView.systemUiVisibility = (
+//                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+//              or View.SYSTEM_UI_FLAG_FULLSCREEN
+                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                )
     }
 
     private fun addImage() {
         binding.addImageBtn.setOnClickListener {
-            // Create an intent to pick an image
-//            val intent = Intent(Intent.ACTION_PICK).apply {
-//                type = "image/*" // Only show images
-//            }
-//            startActivityForResult(intent, REQUEST_IMAGE_PICK)
+
             pickImageFromGallery()
         }
     }
+    private val IMAGE_PICK_CODE = 1001
 
     private fun pickImageFromGallery() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
@@ -91,6 +110,7 @@ class CreateCapsule : AppCompatActivity() {
         return null
     }
 
+    @Deprecated("This method has been deprecated in favor of using the Activity Result API\n      which brings increased type safety via an {@link ActivityResultContract} and the prebuilt\n      contracts for common intents available in\n      {@link androidx.activity.result.contract.ActivityResultContracts}, provides hooks for\n      testing, and allow receiving results in separate, testable classes independent from your\n      activity. Use\n      {@link #registerForActivityResult(ActivityResultContract, ActivityResultCallback)}\n      with the appropriate {@link ActivityResultContract} and handling the result in the\n      {@link ActivityResultCallback#onActivityResult(Object) callback}.")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -100,23 +120,39 @@ class CreateCapsule : AppCompatActivity() {
                 val fileName = getFileName(selectedImageUri)
                 Log.d("Image Selection", "File Name: $fileName")
 
-                // Create your Image object
-                val image = Image(
-                    id = 0,
-                    image = selectedImageUri.toString(),
-                    capsuleId = 0,
-                    capsuleType = "default"
-                )
-                imagesList.add(image) // Add to your image list
-                imageAdapter.notifyItemInserted(imagesList.size - 1)
+                //Save the image to the app's private directory
+                val publicDir = File(getExternalFilesDir(null), "images")
+                if(!publicDir.exists()) {
+                    publicDir.mkdirs()
+                }
+
+                val imageFile = File(publicDir, fileName ?: "image.jpg")
+
+                try {
+                    contentResolver.openInputStream(selectedImageUri)?.use { inputStream ->
+                        imageFile.outputStream().use { outputStream ->
+                            inputStream.copyTo(outputStream)
+                        }
+                    }
+
+                    Log.d("Image Save", "Image saved to: ${imageFile.absolutePath}")
+
+                    // Create your Image object
+                    val image = Image(
+                        id = 0,
+                        imageUrl = imageFile.absolutePath,
+                        capsuleId = capsule?.id ?: 0,
+                        capsuleType = "default"
+                    )
+                    imagesList.add(image) // Add to your image list
+                    imageAdapter.notifyItemInserted(imagesList.size - 1)
+                } catch (e: Exception) {
+                    Log.e("Image Save Error", "Error saving image: ${e.message}")
+                    Toast.makeText(this, "Failed to save image", Toast.LENGTH_SHORT).show()
                 }
             }
-}
-
-
-        private val IMAGE_PICK_CODE = 1001
-
-
+        }
+    }
 
     private fun setTime() {
         val timeEditText: EditText = binding.timeSchedule
@@ -153,17 +189,41 @@ class CreateCapsule : AppCompatActivity() {
         binding.dateSchedule.setText(date).toString()
         binding.timeSchedule.setText(time).toString()
 
+        Log.d("Image upload", "$capsule")
+//         Load the existing images
+        capsule?.images?.let { imageUrls ->
+            for (imageUrl in imageUrls) {
+                // Create an Image object (if needed) and add it to the imagesList
+                val image = Image(
+                    id = 0, // use 0 or another ID value
+                    imageUrl = imageUrl.toString(), // the image URL or file path
+                    capsuleId = capsule?.id ?: 0,
+                    capsuleType = "default"
+                )
+                imagesList.add(image)
+            imageAdapter.notifyDataSetChanged()
+            }
+            // Notify the adapter that new images are available
+        }
+//         Load the existing images from capsule.images (which is a List<Image>)
+        capsule?.images?.let { imageList ->
+            for (image in imageList) {
+                imagesList.add(image) // Add the Image object directly to your existing imagesList
+            imageAdapter.notifyDataSetChanged()
+            }
+            // Notify the adapter that new images are available
+        }
         binding.draftBtn.setOnClickListener{
-            val request = capsule?.let { it1 -> Capsules(it1.id, title, message, receiverEmail, "$date $time", null, null) }
+            val request = capsule?.let { it1 -> Capsules(it1.id, title, message, receiverEmail, "$date $time", null, imagesList) }
             if (request != null) {
                 capsule?.let { it1 ->
                     RetrofitInstance.instance.updateCapsule(it1.id, request).enqueue(object : Callback<Capsules>{
                         override fun onResponse(call: Call<Capsules>, response: Response<Capsules>) {
-//                            val editResponse = response.body()?.updateMessage
+
                             if(response.isSuccessful){
                                 val capsule = response.body()?.title
                                 Log.d("CapsuleUpdate", "Capsule updated successfully: $capsule")
-    //                            Toast.makeText(this@CreateCapsule, editResponse, Toast.LENGTH_SHORT).show()
+                                //                            Toast.makeText(this@CreateCapsule, editResponse, Toast.LENGTH_SHORT).show()
                                 displayName()
                             } else {
                                 Log.e("CapsuleUpdate", "Error: Response unsuccessful")
@@ -225,28 +285,38 @@ class CreateCapsule : AppCompatActivity() {
             val receiverEmailPart = receiverEmail.toRequestBody("text/plain".toMediaTypeOrNull())
 
             // Prepare image file (if you have an image)
-            val imageFile = File("public/images") // Replace with your actual image path
-            val requestFile = imageFile.asRequestBody("image/*".toMediaTypeOrNull())
-            val imagePart = MultipartBody.Part.createFormData("image", imageFile.name, requestFile)
+            val imageParts = mutableListOf<MultipartBody.Part>()
+            for (imageFile in imagesList) {
+                val file = File(imageFile.imageUrl)
+                val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
+                val imagePart = MultipartBody.Part.createFormData("images[]", file.name, requestFile)
+                imageParts.add(imagePart)
+            }
+            Log.d("Total Images to Upload", "${imageParts.size}")
+            Log.d("Image Upload", "$imagesList")
 
             if(title.isNotEmpty() && message.isNotEmpty() && date.isNotEmpty()) {
                 Log.d("CreateCapsule", "Title: $title, Message: $message, Date: $date, Time: $time")
 
                 RetrofitInstance.instance.createCapsule(
-                    images = listOf(imagePart),
+                    images = imageParts,
                     title = titlePart,
                     message = messagePart,
                     receiverEmail = receiverEmailPart,
-                    scheduledOpenAt = datePart,
-                    null
+                    scheduledOpenAt = datePart
                 ).enqueue(object : Callback<Capsules> {
 
                     override fun onResponse(call: Call<Capsules>, response: Response<Capsules>) {
-
+                        Log.d("UploadResponse", "Code: ${response.code()}, Body: ${response.body()}")
                         if (response.isSuccessful && response.body() != null) {
-                            val capsule = response.body()?.draft
-                            Toast.makeText(this@CreateCapsule, capsule, Toast.LENGTH_SHORT).show()
-                            displayName()
+                            Log.d("UploadResponse", "Code: ${response.code()}, Body: ${response.body()}")
+                            Toast.makeText(this@CreateCapsule, "Capsule created Successfully", Toast.LENGTH_SHORT).show()
+                            val intent = Intent(this@CreateCapsule, MyCapsuleList::class.java)
+                            startActivity(intent)
+                            finish()
+                            response.message()
+                        } else {
+                            Toast.makeText(this@CreateCapsule, "Email address doesn't exist.", Toast.LENGTH_SHORT).show()
                         }
                     }
                     override fun onFailure(call: Call<Capsules>, t: Throwable) {
@@ -271,8 +341,57 @@ class CreateCapsule : AppCompatActivity() {
             val title = binding.etTitle.text.toString()
             val message = binding.etMessage.text.toString()
             val date = binding.dateSchedule.text.toString()
-            val schedule = binding.dateSchedule.text.toString()
-//            val receiverEmail = binding.etReceiverEmail.text.toString()
+            val time = binding.timeSchedule.text.toString()
+            val receiverEmail = binding.receiverEmail.text.toString()
+
+            // Prepare text fields as RequestBody
+            val titlePart = title.toRequestBody("text/plain".toMediaTypeOrNull())
+            val messagePart = message.toRequestBody("text/plain".toMediaTypeOrNull())
+            val datePart = "$date $time".toRequestBody("text/plain".toMediaTypeOrNull())
+            val receiverEmailPart = receiverEmail.toRequestBody("text/plain".toMediaTypeOrNull())
+
+            // Prepare image file (if you have an image)
+            val imageParts = mutableListOf<MultipartBody.Part>()
+            for (imageFile in imagesList) {
+                val file = imageFile.imageUrl?.let { it1 -> File(it1) }
+                val requestFile = file?.asRequestBody("image/*".toMediaTypeOrNull())
+                val imagePart = requestFile?.let { it1 ->
+                    MultipartBody.Part.createFormData("images[]",
+                        file.name, it1
+                    )
+                }
+                if (imagePart != null) {
+                    imageParts.add(imagePart)
+                }
+            }
+
+            if(title.isNotEmpty() && message.isNotEmpty() && date.isNotEmpty()) {
+                Log.d("CreateCapsule", "Title: $title, Message: $message, Date: $date, Time: $time")
+
+                RetrofitInstance.instance.sendCapsule(
+                    images = imageParts,
+                    title = titlePart,
+                    message = messagePart,
+                    receiverEmail = receiverEmailPart,
+                    scheduledOpenAt = datePart
+                ).enqueue(object : Callback<Capsules> {
+
+                    override fun onResponse(call: Call<Capsules>, response: Response<Capsules>) {
+                        Log.d("UploadResponse", "Code: ${response.code()}, Body: ${response.body()}")
+                        if (response.isSuccessful && response.body() != null) {
+                            Toast.makeText(this@CreateCapsule, "Capsule created Successfully", Toast.LENGTH_SHORT).show()
+                            val intent = Intent(this@CreateCapsule, MyCapsuleList::class.java)
+                            startActivity(intent)
+                            finish()
+                        }
+                    }
+                    override fun onFailure(call: Call<Capsules>, t: Throwable) {
+                        Toast.makeText(this@CreateCapsule, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                    }
+                })
+            } else {
+                Toast.makeText(this, "Enter some message", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }
