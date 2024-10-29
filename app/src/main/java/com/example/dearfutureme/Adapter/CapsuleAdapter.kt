@@ -15,7 +15,7 @@ import com.example.dearfutureme.Activities.SharedCapsule
 import com.example.dearfutureme.Model.Capsules
 import com.example.dearfutureme.APIResponse.DeletedCapsuleResponse
 import com.example.dearfutureme.DataRepository.CapsuleCount
-import com.example.dearfutureme.DataRepository.SharingCapsuleRepository
+import com.example.dearfutureme.DataRepository.UserRepository
 import com.example.dearfutureme.Model.Image
 import com.example.dearfutureme.R
 import com.example.dearfutureme.databinding.ViewholderCapsulelistBinding
@@ -51,11 +51,7 @@ class CapsuleAdapter(private val capsuleList: MutableList<Capsules>) : RecyclerV
                     if (response.isSuccessful && response.body() != null) {
                         response.body()?.let { capsule ->
                             Log.d("CapsuleAdapter", "Received capsule: $capsule")
-                            val imageList: List<Image> = capsule.images!!
-                            val imageUrls = imageList.map {
-                                it.imageUrl
-                            } // Extract URLs from the Image objects
-
+                            // Create Intent to navigate to the editing activity
                             val intent = Intent(holder.itemView.context, CreateCapsule::class.java).apply {
                                 putExtra("MODE", "EDIT")
                                 putExtra("CAPSULE", capsule)
@@ -83,11 +79,6 @@ class CapsuleAdapter(private val capsuleList: MutableList<Capsules>) : RecyclerV
                         response.body()?.let { capsule ->
                             Log.d("CapsuleAdapter", "Received capsule: $capsule")
                             // Create Intent to navigate to the editing activity
-                            val imageList: List<Image> = capsule.images
-                            val imageUrls = imageList.map {
-                                it.imageUrl
-                            } // Extract URLs from the Image objects
-                            SharingCapsuleRepository.capsuleImages = imageUrls
                             val intent = Intent(this@CapsuleAdapter.context, SharedCapsule::class.java).apply {
                                 putExtra("CAPSULE", capsule)
                             }
